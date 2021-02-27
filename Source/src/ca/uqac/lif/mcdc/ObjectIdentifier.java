@@ -44,9 +44,26 @@ public class ObjectIdentifier<T>
 	 * identifier.
 	 * @return The number of objects
 	 */
-	protected int countDistinctObjects()
+	public int countDistinctObjects()
 	{
 		return m_objectIds.size();
+	}
+	
+	/**
+	 * Determines if an element given to the identifier has been seen before.
+	 * @param n The element
+	 * @return <tt>true</tt> if the object has been seen before,
+	 * <tt>false</tt> otherwise
+	 */
+	public boolean seenBefore(T n)
+	{
+		if (m_objectIds.containsKey(n))
+		{
+			return true;
+		}
+		m_idCounter++;
+		m_objectIds.put(n, m_idCounter);
+		return false;
 	}
 	
 	/**
@@ -57,7 +74,7 @@ public class ObjectIdentifier<T>
 	 * @param n The hologram node
 	 * @return The unique ID
 	 */
-	protected int getObjectId(T n)
+	public int getObjectId(T n)
 	{
 		if (m_objectIds.containsKey(n)) 
 		{

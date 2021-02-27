@@ -21,12 +21,18 @@ import ca.uqac.lif.labpal.Group;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.Region;
 import ca.uqac.lif.labpal.table.ExperimentTable;
+import ca.uqac.lif.mcdc.ObjectIdentifier;
 import ca.uqac.lif.mtnp.plot.gnuplot.Scatterplot;
 import ca.uqac.lif.mtnp.table.ExpandAsColumns;
 import ca.uqac.lif.mtnp.table.TransformedTable;
 import ca.uqac.lif.synthia.random.RandomBoolean;
 import ca.uqac.lif.synthia.random.RandomFloat;
 import ca.uqac.lif.synthia.random.RandomInteger;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import static mcdclab.CriterionFusionExperiment.CRITERIA;
 import static mcdclab.CriterionFusionExperiment.SIZE_GLOBAL;
@@ -118,13 +124,16 @@ public class MyLaboratory extends Laboratory
 			OperatorProvider op_provider = new OperatorProvider();
 			addFormulas(op_provider);
 			big_r.add(FORMULA, op_provider.getNames());
-			
+
+			ObjectIdentifier<ToolTriplet> identifier = new ObjectIdentifier<ToolTriplet>();
+
 			// The factory to generate experiments
 			TestSuiteGenerationFactory factory = new TestSuiteGenerationFactory(this, op_provider);
 
 			for (Region c_r : big_r.all(CRITERION))
 			{
 				String criterion = c_r.getString(CRITERION);
+				int t = Integer.parseInt(criterion.substring(0, 1));
 				ExperimentTable et_time = new ExperimentTable(FORMULA, METHOD, TIME);
 				et_time.setShowInList(false);
 				TransformedTable tt_time = new TransformedTable(new ExpandAsColumns(METHOD, TIME), et_time);
@@ -139,6 +148,11 @@ public class MyLaboratory extends Laboratory
 				tt_size_vs_time.setTitle("Generation time vs. test suite size " + criterion);
 				for (Region f_r : c_r.all(FORMULA, METHOD))
 				{
+					int n = op_provider.getFormula(f_r.getString(FORMULA)).getSize();
+					if (identifier.seenBefore(new ToolTriplet(f_r.getString(METHOD), t, n)))
+					{
+						continue;
+					}
 					TestGenerationExperiment e = factory.get(f_r);
 					if (e == null)
 					{
@@ -225,6 +239,58 @@ public class MyLaboratory extends Laboratory
 		{
 			provider.add("Random " + i, picker.pick());
 		}
+	}
+	
+	protected static class ToolTriplet
+	{
+		protected int m_t;
+		
+		protected int m_n;
+		
+		protected String m_tool;
+		
+		public ToolTriplet(String tool, int t, int n)
+		{
+			super();
+			m_tool = tool;
+			m_t = t;
+			m_n = n;
+		}
+		
+		@Override
+		public boolean equals(Object o)
+		{
+			ToolTriplet tt = (ToolTriplet) o;
+			return tt.m_t == m_t && tt.m_n == m_n && tt.m_tool.compareTo(m_tool) == 0;
+		}
+		
+		@Override
+		public int hashCode()
+		{
+			return m_tool.hashCode() + m_n + m_t;
+		}
+	}
+
+	protected static boolean seenCombination(Map<Integer,Set<Integer>> map, int t, int n)
+	{
+		if (!map.containsKey(t))
+		{
+			Set<Integer> set = new HashSet<Integer>();
+			set.add(n);
+			map.put(t, set);
+			return false;
+		}
+		Set<Integer> set = map.get(t);
+		boolean b = false;
+		if (set.contains(n))
+		{
+			b = true;
+		}
+		else
+		{
+			set.add(n);
+		}
+		return b;
 	}
 
 	public static void main(String[] args)
