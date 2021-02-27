@@ -50,13 +50,13 @@ public class MyLaboratory extends Laboratory
 	{
 
 		boolean include_safecomp = false;
-		boolean include_comparison = true;
-		
+		boolean include_comparison = false;
+		boolean include_acts = true;
+
 		// Comparison with SAFECOMP 2018
 		if (include_safecomp)
 		{
-			// The factory to generate experiments
-			Group g = new Group("Test suite generation experiments");
+			Group g = new Group("Test suite generation experiments (MC/DC coverage)");
 			add(g);
 
 			// A big region encompassing all the lab's parameters
@@ -66,10 +66,10 @@ public class MyLaboratory extends Laboratory
 			OperatorProvider op_provider = new OperatorProvider();
 			addFormulas(op_provider);
 			big_r.add(FORMULA, op_provider.getNames());
-			
+
 			// The factory to generate experiments
 			TestSuiteGenerationFactory factory = new TestSuiteGenerationFactory(this, op_provider);
-			
+
 			for (Region c_r : big_r.all(CRITERION))
 			{
 				String criterion = c_r.getString(CRITERION);
@@ -104,6 +104,58 @@ public class MyLaboratory extends Laboratory
 			}
 		}
 
+		// Comparison with ACTS on t-way
+		if (include_acts)
+		{
+			// The factory to generate experiments
+			Group g = new Group("Test suite generation experiments (combinatorial coverage)");
+			add(g);
+
+			// A big region encompassing all the lab's parameters
+			Region big_r = new Region();
+			big_r.add(METHOD, HittingSetTestGenerationExperiment.NAME, ActsTestGenerationExperiment.NAME);
+			big_r.add(CRITERION, TestSuiteGenerationFactory.C_2WAY, TestSuiteGenerationFactory.C_3WAY);
+			OperatorProvider op_provider = new OperatorProvider();
+			addFormulas(op_provider);
+			big_r.add(FORMULA, op_provider.getNames());
+			
+			// The factory to generate experiments
+			TestSuiteGenerationFactory factory = new TestSuiteGenerationFactory(this, op_provider);
+
+			for (Region c_r : big_r.all(CRITERION))
+			{
+				String criterion = c_r.getString(CRITERION);
+				ExperimentTable et_time = new ExperimentTable(FORMULA, METHOD, TIME);
+				et_time.setShowInList(false);
+				TransformedTable tt_time = new TransformedTable(new ExpandAsColumns(METHOD, TIME), et_time);
+				tt_time.setTitle("Test generation time " + criterion);
+				ExperimentTable et_size = new ExperimentTable(FORMULA, METHOD, SIZE);
+				et_size.setShowInList(false);
+				TransformedTable tt_size = new TransformedTable(new ExpandAsColumns(METHOD, SIZE), et_size);
+				tt_size.setTitle("Test suite size " + criterion);
+				ExperimentTable et_size_vs_time = new ExperimentTable(SIZE, METHOD, TIME);
+				et_size_vs_time.setShowInList(false);
+				TransformedTable tt_size_vs_time = new TransformedTable(new ExpandAsColumns(METHOD, TIME), et_size_vs_time);
+				tt_size_vs_time.setTitle("Generation time vs. test suite size " + criterion);
+				for (Region f_r : c_r.all(FORMULA, METHOD))
+				{
+					TestGenerationExperiment e = factory.get(f_r);
+					if (e == null)
+					{
+						continue;
+					}
+					g.add(e);
+					et_time.add(e);
+					et_size.add(e);
+					et_size_vs_time.add(e);
+				}
+				add(tt_time, tt_size, tt_size_vs_time);
+				Scatterplot p_size_vs_time = new Scatterplot(tt_size_vs_time);
+				p_size_vs_time.withLines(false);
+				add(p_size_vs_time);				
+			}
+		}
+
 		// Comparison merged vs. global
 		if (include_comparison)
 		{
@@ -119,7 +171,7 @@ public class MyLaboratory extends Laboratory
 			OperatorProvider op_provider = new OperatorProvider();
 			addFormulas(op_provider);
 			big_r.add(FORMULA, op_provider.getNames());
-			
+
 			// The factory to generate experiments
 			CriterionFusionExperimentFactory factory = new CriterionFusionExperimentFactory(this, op_provider);
 

@@ -129,12 +129,31 @@ public class TestSuiteGenerationFactory extends FormulaBasedExperimentFactory<Te
 		{
 			return getHittingSetExperiment(op, formula_name, r.getString(CRITERION));
 		}
+		if (method.compareTo(ActsTestGenerationExperiment.NAME) == 0)
+		{
+			return getActsExperiment(op, formula_name, r.getString(CRITERION));
+		}
 		return null;
 	}
 
 	protected static HittingSetTestGenerationExperiment getHittingSetExperiment(Operator formula, String formula_name, String criterion)
 	{
 		Set<Truncation> truncations = getTruncations(formula, criterion);
-		return new HittingSetTestGenerationExperiment(formula, formula_name, truncations);
+		HittingSetTestGenerationExperiment e = new HittingSetTestGenerationExperiment(formula, formula_name, truncations);
+		e.setInput(CRITERION, criterion);
+		return e;
+	}
+	
+	protected static ActsTestGenerationExperiment getActsExperiment(Operator formula, String formula_name, String criterion)
+	{
+		if (!criterion.endsWith("-way"))
+		{
+			// ACTS only works for t-way coverage
+			return null;
+		}
+		int t = Integer.parseInt(criterion.substring(0, 1));
+		ActsTestGenerationExperiment e = new ActsTestGenerationExperiment(formula, formula_name, t);
+		e.setInput(CRITERION, criterion);
+		return e;
 	}
 }
