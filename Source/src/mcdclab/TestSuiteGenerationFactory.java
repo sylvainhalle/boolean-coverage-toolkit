@@ -129,6 +129,10 @@ public class TestSuiteGenerationFactory extends FormulaBasedExperimentFactory<Te
 		{
 			return getHittingSetExperiment(op, formula_name, r.getString(CRITERION));
 		}
+		if (method.compareTo(RandomTestGenerationExperiment.NAME) == 0)
+		{
+			return getRandomExperiment(op, formula_name, r.getString(CRITERION));
+		}
 		if (method.compareTo(ActsTestGenerationExperiment.NAME) == 0)
 		{
 			return getActsExperiment(op, formula_name, r.getString(CRITERION));
@@ -140,6 +144,14 @@ public class TestSuiteGenerationFactory extends FormulaBasedExperimentFactory<Te
 	{
 		Set<Truncation> truncations = getTruncations(formula, criterion);
 		HittingSetTestGenerationExperiment e = new HittingSetTestGenerationExperiment(formula, formula_name, truncations);
+		e.setInput(CRITERION, criterion);
+		return e;
+	}
+	
+	protected static RandomTestGenerationExperiment getRandomExperiment(Operator formula, String formula_name, String criterion)
+	{
+		Set<Truncation> truncations = getTruncations(formula, criterion);
+		RandomTestGenerationExperiment e = new RandomTestGenerationExperiment(formula, formula_name, truncations);
 		e.setInput(CRITERION, criterion);
 		return e;
 	}

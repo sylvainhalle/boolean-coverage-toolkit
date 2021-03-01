@@ -46,6 +46,11 @@ public abstract class TestGenerationExperiment extends FormulaBasedExperiment
 	public static final transient String TIME = "Time";
 	
 	/**
+	 * Name of parameter "Coverage".
+	 */
+	public static final transient String COVERAGE = "Coverage";
+	
+	/**
 	 * Creates a new experiment.
 	 * @param formula The formula to generate coverage for
 	 * @param formula_name A name given to the formula
@@ -57,5 +62,6 @@ public abstract class TestGenerationExperiment extends FormulaBasedExperiment
 		describe(CRITERION, "The method used to generate test suites");
 		describe(SIZE, "The size of the generated test suite");
 		describe(TIME, "The time (in ms) taken to generate the test suite");
+		describe(COVERAGE, "The coverage achieved by the generated test suite");
 	}	
 }

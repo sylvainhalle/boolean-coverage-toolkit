@@ -81,5 +81,5 @@ public class HittingSetTestGenerationExperiment extends TestGenerationExperiment
 		long end = System.currentTimeMillis();
 		write(SIZE, size);
 		write(TIME, end - start);
-	}	
+	}
 }
