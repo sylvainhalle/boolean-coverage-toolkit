@@ -41,6 +41,7 @@ import static mcdclab.CriterionFusionExperiment.TIME_GLOBAL;
 import static mcdclab.CriterionFusionExperiment.TIME_MERGED;
 import static mcdclab.FormulaBasedExperiment.FORMULA;
 import static mcdclab.FormulaBasedExperiment.FORMULA_SIZE;
+import static mcdclab.FormulaBasedExperiment.NUM_VARS;
 import static mcdclab.TestGenerationExperiment.CRITERION;
 import static mcdclab.TestGenerationExperiment.METHOD;
 import static mcdclab.TestGenerationExperiment.SIZE;
@@ -134,11 +135,11 @@ public class MyLaboratory extends Laboratory
 			{
 				String criterion = c_r.getString(CRITERION);
 				int t = Integer.parseInt(criterion.substring(0, 1));
-				ExperimentTable et_time = new ExperimentTable(FORMULA, METHOD, TIME);
+				ExperimentTable et_time = new ExperimentTable(NUM_VARS, METHOD, TIME);
 				et_time.setShowInList(false);
 				TransformedTable tt_time = new TransformedTable(new ExpandAsColumns(METHOD, TIME), et_time);
 				tt_time.setTitle("Test generation time " + criterion);
-				ExperimentTable et_size = new ExperimentTable(FORMULA, METHOD, SIZE);
+				ExperimentTable et_size = new ExperimentTable(NUM_VARS, METHOD, SIZE);
 				et_size.setShowInList(false);
 				TransformedTable tt_size = new TransformedTable(new ExpandAsColumns(METHOD, SIZE), et_size);
 				tt_size.setTitle("Test suite size " + criterion);

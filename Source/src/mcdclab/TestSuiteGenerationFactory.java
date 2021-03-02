@@ -124,6 +124,16 @@ public class TestSuiteGenerationFactory extends FormulaBasedExperimentFactory<Te
 		{
 			return null;
 		}
+		String criterion = r.getString(CRITERION);
+		if (criterion.endsWith("-way"))
+		{
+			int t = Integer.parseInt(criterion.substring(0, 1));
+			if (op.getVariables().size() < t)
+			{
+				// Cannot calculate t-way with fewer than t variables
+				return null;
+			}
+		}
 		String method = r.getString(METHOD);
 		if (method.compareTo(HittingSetTestGenerationExperiment.NAME) == 0)
 		{

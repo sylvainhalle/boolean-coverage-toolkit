@@ -17,14 +17,14 @@
  */
 package mcdclab;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 
 import ca.uqac.lif.labpal.ExperimentException;
 import ca.uqac.lif.mcdc.Operator;
-import edu.uta.cse.fireeye.console.ActsConsoleManager;
-import edu.uta.cse.fireeye.service.engine.FireEye;
 import edu.uta.cse.fireeye.service.exception.OperationServiceException;
 import edu.uta.cse.fireeye.common.Parameter;
 import edu.uta.cse.fireeye.common.SUT;
@@ -54,12 +54,13 @@ public class ActsTestGenerationExperiment extends TestGenerationExperiment
 	public void execute() throws ExperimentException, InterruptedException 
 	{
 		long start = System.currentTimeMillis();
-		SUT problem = buildSUT();
-		TestGenProfile tgp = TestGenProfile.instance();
-		TestSet ts = new TestSet();
+		SUT sut = buildSUT();
+		TestGenProfile profile = TestGenProfile.instance();
+		profile.setDOI(m_t); // Set strength
+		TestSet ts = null;
 		try
 		{
-			FireEye.generateTestSet(ts, problem);
+			ts = SilentFireEye.generateTestSet(ts, sut, new PrintStream(new EmptyStream()));
 		}
 		catch (OperationServiceException e) 
 		{
@@ -83,6 +84,18 @@ public class ActsTestGenerationExperiment extends TestGenerationExperiment
 		}
 		SUT sut = new SUT(params);
 		return sut;
+	}
+	
+	/**
+	 * An output stream that does nothing.
+	 */
+	protected static class EmptyStream extends OutputStream
+	{
+		@Override
+		public void write(int b) throws IOException
+		{
+			// Do nothing
+		}
 	}
 
 }
