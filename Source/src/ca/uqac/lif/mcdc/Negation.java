@@ -90,4 +90,10 @@ public class Negation extends Operator
 			out.append(")");
 		}
 	}
+
+	@Override
+	public int getDepth()
+	{
+		return 1 + m_operand.getDepth();
+	}
 }

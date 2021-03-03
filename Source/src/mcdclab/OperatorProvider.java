@@ -20,6 +20,7 @@ package mcdclab;
 import java.util.HashMap;
 import java.util.Map;
 
+import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.mcdc.Operator;
 
 /**
@@ -79,5 +80,59 @@ public class OperatorProvider
 			names[i++] = name;
 		}
 		return names;
+	}
+	
+	/**
+	 * Counts the number of formulas contained in this provider.
+	 * @return The number of formulas
+	 */
+	public int countFormulas()
+	{
+		return m_formulas.size();
+	}
+	
+	/**
+	 * Computes the maximum nesting depth of all formulas contained in this
+	 * provider.
+	 * @return The maximum depth
+	 */
+	public int getMaxDepth()
+	{
+		int max_depth = 0;
+		for (Operator op : m_formulas.values())
+		{
+			max_depth = Math.max(max_depth, op.getDepth());
+		}
+		return max_depth;
+	}
+	
+	/**
+	 * Computes the maximum number of variables of all formulas contained in this
+	 * provider.
+	 * @return The maximum number of variables
+	 */
+	public int getMaxVariables()
+	{
+		int max_nv = 0;
+		for (Operator op : m_formulas.values())
+		{
+			max_nv = Math.max(max_nv, op.getVariables().size());
+		}
+		return max_nv;
+	}
+	
+	/**
+	 * Computes the maximum number of connectives of all formulas contained in
+	 * this provider.
+	 * @return The maximum number of connectives
+	 */
+	public int getMaxSize()
+	{
+		int max_nv = 0;
+		for (Operator op : m_formulas.values())
+		{
+			max_nv = Math.max(max_nv, op.getSize());
+		}
+		return max_nv;
 	}
 }

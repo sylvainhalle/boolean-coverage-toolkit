@@ -68,6 +68,8 @@ public abstract class Operator
 		return out.toString();
 	}
 	
+	public abstract int getDepth();
+	
 	protected abstract void getVariables(Set<String> vars);
 	
 	protected abstract void toString(StringBuilder out);

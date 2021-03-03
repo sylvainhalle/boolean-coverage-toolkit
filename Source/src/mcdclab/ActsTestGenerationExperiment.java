@@ -69,6 +69,7 @@ public class ActsTestGenerationExperiment extends TestGenerationExperiment
 		long end = System.currentTimeMillis();
 		write(TIME, end - start);
 		write(SIZE, ts.getNumOfTests());
+		write(COVERAGE, 1);
 	}
 	
 	protected SUT buildSUT()

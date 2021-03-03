@@ -17,6 +17,8 @@
  */
 package mcdclab;
 
+import ca.uqac.lif.json.JsonElement;
+import ca.uqac.lif.json.JsonNumber;
 import ca.uqac.lif.labpal.Experiment;
 import ca.uqac.lif.mcdc.Operator;
 
@@ -58,5 +60,22 @@ public abstract class FormulaBasedExperiment extends Experiment
 		setInput(NUM_VARS, formula.getVariables().size());
 		setDescription(formula.toString());
 		m_formula = formula;
+	}
+	
+	/**
+	 * Reads a float from an experiment parameter. This convenience method
+	 * circumvents a known bug in {@link Experiment#readFloat(String)} that
+	 * makes it always return an integer instead of the expected float.
+	 * @param parameter The parameter to read from
+	 * @return The float value
+	 */
+	public float readFractional(String parameter)
+	{
+		JsonElement j = read(parameter);
+		if (!(j instanceof JsonNumber))
+		{
+			return 0;
+		}
+		return ((JsonNumber) j).numberValue().floatValue();
 	}
 }

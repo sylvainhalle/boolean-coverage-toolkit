@@ -96,4 +96,40 @@ public class Valuation
 		}
 		return cnt;
 	}
+	
+	@Override
+	public boolean equals(Object o)
+	{
+		if (o == null || !(o instanceof Valuation))
+		{
+			return false;
+		}
+		Valuation v = (Valuation) o;
+		if (m_values.size() != v.m_values.size())
+		{
+			return false;
+		}
+		for (Map.Entry<String,Boolean> entry : m_values.entrySet())
+		{
+			String key = entry.getKey();
+			if (v.m_values.containsKey(key))
+			{
+				if (m_values.get(key) != v.m_values.get(key))
+				{
+					return false;
+				}
+			}
+			else
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+	
+	@Override
+	public int hashCode()
+	{
+		return m_values.size();
+	}
 }

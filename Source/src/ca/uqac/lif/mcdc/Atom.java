@@ -60,4 +60,10 @@ public class Atom extends Operator
 	{
 		out.append(m_name);
 	}
+
+	@Override
+	public int getDepth()
+	{
+		return 1;
+	}
 }

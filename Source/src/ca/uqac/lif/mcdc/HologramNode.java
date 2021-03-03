@@ -68,6 +68,15 @@ public class HologramNode
 		m_children.add(n);
 	}
 	
+	/**
+	 * Gets the children of this node
+	 * @return The list of children
+	 */
+	public List<HologramNode> getChildren()
+	{
+		return m_children;
+	}
+	
 	public HologramNode duplicate(boolean with_state)
 	{
 		HologramNode n = new HologramNode(m_label);
@@ -105,7 +114,6 @@ public class HologramNode
 		for (int i = 0; i < m_children.size(); i++)
 		{
 			HologramNode n1 = m_children.get(i);
-			HologramNode n2 = n.m_children.get(i);
 			if (n1 == null)
 			{
 				System.out.println("");

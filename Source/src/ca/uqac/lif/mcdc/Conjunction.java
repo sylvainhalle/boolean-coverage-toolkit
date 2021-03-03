@@ -120,6 +120,15 @@ public class Conjunction extends Operator
 		}
 		out.append(")");
 	}
-	
-	
+
+	@Override
+	public int getDepth()
+	{
+		int max = 0;
+		for (Operator op : m_operands)
+		{
+			max = Math.max(max, op.getDepth());
+		}
+		return max + 1;
+	}
 }

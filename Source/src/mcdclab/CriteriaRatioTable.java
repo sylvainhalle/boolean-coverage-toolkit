@@ -69,7 +69,7 @@ public class CriteriaRatioTable extends Table
 	 * The set experiments to read from, split into categories
 	 * (the map's key)
 	 */
-	protected transient Map<String,Set<Experiment>> m_experiments;
+	protected transient Map<String,Set<FormulaBasedExperiment>> m_experiments;
 	
 	/**
 	 * The dependencies for lineage in the second column of the table
@@ -96,7 +96,7 @@ public class CriteriaRatioTable extends Table
 		m_parameter2 = param2;
 		m_categoryCaption = category_caption;
 		m_valueCaption = value_caption;
-		m_experiments = new HashMap<String,Set<Experiment>>();
+		m_experiments = new HashMap<String,Set<FormulaBasedExperiment>>();
 		m_dependencies = new ArrayList<NodeFunction>();
 	}
 
@@ -104,13 +104,13 @@ public class CriteriaRatioTable extends Table
 	 * Adds an experiment to the table
 	 * @param e The experiment
 	 */
-	public void add(Experiment e)
+	public void add(FormulaBasedExperiment e)
 	{
 		String category = e.readString(m_category);
-		Set<Experiment> exps = null;
+		Set<FormulaBasedExperiment> exps = null;
 		if (!m_experiments.containsKey(category))
 		{
-			exps = new HashSet<Experiment>();
+			exps = new HashSet<FormulaBasedExperiment>();
 			m_experiments.put(category, exps);
 		}
 		else
@@ -125,15 +125,15 @@ public class CriteriaRatioTable extends Table
 	{
 		TempTable table = new TempTable(getId(), m_categoryCaption, m_valueCaption);
 		m_dependencies.clear();
-		for (Map.Entry<String,Set<Experiment>> entry : m_experiments.entrySet())
+		for (Map.Entry<String,Set<FormulaBasedExperiment>> entry : m_experiments.entrySet())
 		{
 			String category = entry.getKey();
 			Set<NodeFunction> deps = new HashSet<NodeFunction>();
 			float ratio = 0, n = 0;
 			for (Experiment e : entry.getValue())
 			{
-				float v1 = e.readFloat(m_parameter1);
-				float v2 = e.readFloat(m_parameter2);
+				float v1 = e.readFractional(m_parameter1);
+				float v2 = e.readFractional(m_parameter2);
 				if (v1 == 0 || v2 == 0)
 				{
 					continue;

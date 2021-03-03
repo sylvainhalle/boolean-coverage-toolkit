@@ -31,12 +31,20 @@ public class KeepValuesOf implements Truncation
 	 */
 	protected List<String> m_variables;
 	
+	/**
+	 * Creates a new instance of this truncation.
+	 * @param variables The list of variables to keep in the resulting tree
+	 */
 	public KeepValuesOf(List<String> variables)
 	{
 		super();
 		m_variables = variables;
 	}
 	
+	/**
+	 * Creates a new instance of this truncation.
+	 * @param variables The array of variables to keep in the resulting tree
+	 */
 	public KeepValuesOf(String ... variables)
 	{
 		super();
@@ -50,7 +58,7 @@ public class KeepValuesOf implements Truncation
 	@Override
 	public HologramNode applyTo(HologramNode n) 
 	{
-		HologramNode new_n = new HologramNode(n.getLabel(), n.getValue());
+		HologramNode new_n = new HologramNode("?", null);
 		Map<String,HologramNode> vars = new HashMap<String,HologramNode>();
 		getVariables(n, vars);
 		for (String v : m_variables)
@@ -117,5 +125,11 @@ public class KeepValuesOf implements Truncation
 			out_set.add(new KeepValuesOf(a_variables));
 		}
 		return out_set;
+	}
+	
+	@Override
+	public String toString()
+	{
+		return "τ" + m_variables;
 	}
 }
