@@ -17,9 +17,6 @@
  */
 package mcdclab;
 
-import ca.uqac.lif.json.JsonElement;
-import ca.uqac.lif.json.JsonNumber;
-import ca.uqac.lif.labpal.Experiment;
 import ca.uqac.lif.labpal.Group;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.LatexNamer;
@@ -33,7 +30,6 @@ import ca.uqac.lif.synthia.random.RandomBoolean;
 import ca.uqac.lif.synthia.random.RandomFloat;
 import ca.uqac.lif.synthia.random.RandomInteger;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -60,10 +56,22 @@ public class MyLaboratory extends Laboratory
 	@Override
 	public void setup()
 	{
+		// Metadata
+		setAuthor("Sylvain Hallé");
+		setTitle("Boolean condition coverage with evaluation trees");
+		
 		boolean include_random = true;
-		boolean include_safecomp = false;
+		boolean include_safecomp = true;
 		boolean include_comparison = false;
 		boolean include_acts = true;
+		
+		/* If set to true, sets of experiments that are excluded from the lab
+		   will still create the instances of tables, plots and macros
+		   associated to these experiments, even though the experiments
+		   themselves are not added to the lab. This makes it possible to
+		   export artifacts normally (i.e. without creating LaTeX compilation
+		   errors) when running the lab on a subset of all experiments. */
+		boolean placeholders = true;
 
 		// Basic stats about all formulas in the benchmark
 		{
@@ -73,7 +81,7 @@ public class MyLaboratory extends Laboratory
 		}
 
 		// Coverage for the random technique on all formulas
-		if (include_random)
+		if (placeholders || include_random)
 		{
 			Group g = new Group("Random test suite generation experiments");
 			add(g);
@@ -97,7 +105,7 @@ public class MyLaboratory extends Laboratory
 
 			for (Region f_r : big_r.all(METHOD, CRITERION, FORMULA))
 			{
-				TestGenerationExperiment e = factory.get(f_r);
+				TestGenerationExperiment e = factory.get(f_r, include_random);
 				if (e == null)
 				{
 					continue;
@@ -107,16 +115,20 @@ public class MyLaboratory extends Laboratory
 			}
 		}
 
-		// Comparison with SAFECOMP 2018
-		if (include_safecomp)
+		// Comparisons for MC/DC
+		if (placeholders || include_safecomp)
 		{
 			Group g = new Group("Test suite generation experiments (MC/DC coverage)");
 			add(g);
+			
+			RatioMacro rm_size = new RatioMacro(this, "sizeRatioMCDC", SIZE, FORMULA, "Ratio between test suite size of hypergraph vs MCDC");
+			RatioMacro rm_time = new RatioMacro(this, "timeRatioMCDC", TIME, FORMULA, "Ratio between test suite time of hypergraph vs MCDC");
+			add(rm_size, rm_time);
 
 			// A big region encompassing all the lab's parameters
 			Region big_r = new Region();
-			big_r.add(METHOD, HittingSetTestGenerationExperiment.NAME);
-			big_r.add(CRITERION, TestSuiteGenerationFactory.C_MCDC, TestSuiteGenerationFactory.C_2WAY, TestSuiteGenerationFactory.C_3WAY);
+			big_r.add(METHOD, HittingSetTestGenerationExperiment.NAME, MCDCTestGenerationExperiment.NAME);
+			big_r.add(CRITERION, TestSuiteGenerationFactory.C_MCDC);
 			OperatorProvider op_provider = new OperatorProvider();
 			addFormulas(op_provider);
 			big_r.add(FORMULA, op_provider.getNames());
@@ -131,36 +143,57 @@ public class MyLaboratory extends Laboratory
 				et_time.setShowInList(false);
 				TransformedTable tt_time = new TransformedTable(new ExpandAsColumns(METHOD, TIME), et_time);
 				tt_time.setTitle("Test generation time " + criterion);
+				tt_time.setNickname(LatexNamer.latexify("tGenTime" + criterion));
 				ExperimentTable et_size = new ExperimentTable(FORMULA, METHOD, SIZE);
 				et_size.setShowInList(false);
 				TransformedTable tt_size = new TransformedTable(new ExpandAsColumns(METHOD, SIZE), et_size);
 				tt_size.setTitle("Test suite size " + criterion);
+				tt_size.setNickname(LatexNamer.latexify("tGenSize" + criterion));
 				ExperimentTable et_size_vs_time = new ExperimentTable(SIZE, METHOD, TIME);
 				et_size_vs_time.setShowInList(false);
 				TransformedTable tt_size_vs_time = new TransformedTable(new ExpandAsColumns(METHOD, TIME), et_size_vs_time);
 				tt_size_vs_time.setTitle("Generation time vs. test suite size " + criterion);
 				tt_size_vs_time.setNickname(LatexNamer.latexify("ttTimeVsSize" + criterion));
-				for (Region f_r : c_r.all(FORMULA))
+				ExperimentTable et_f_size_vs_time = new ExperimentTable(FORMULA_SIZE, METHOD, TIME);
+				et_f_size_vs_time.setShowInList(false);
+				TransformedTable tt_f_size_vs_time = new TransformedTable(new ExpandAsColumns(METHOD, TIME), et_f_size_vs_time);
+				tt_f_size_vs_time.setTitle("Generation time vs. formula size " + criterion);
+				tt_f_size_vs_time.setNickname(LatexNamer.latexify("ttFormulaSizeVsSize" + criterion));
+				for (Region f_r : c_r.all(FORMULA, METHOD))
 				{
-					TestGenerationExperiment e = factory.get(f_r);
+					TestGenerationExperiment e = factory.get(f_r, include_safecomp);
 					if (e == null)
 					{
 						continue;
+					}
+					if (f_r.getString(METHOD).compareTo(HittingSetTestGenerationExperiment.NAME) == 0)
+					{
+						rm_size.addToFirstSet(e);
+						rm_time.addToFirstSet(e);
+					}
+					if (f_r.getString(METHOD).compareTo(MCDCTestGenerationExperiment.NAME) == 0)
+					{
+						rm_size.addToSecondSet(e);
+						rm_time.addToSecondSet(e);
 					}
 					g.add(e);
 					et_time.add(e);
 					et_size.add(e);
 					et_size_vs_time.add(e);
+					et_f_size_vs_time.add(e);
 				}
-				add(tt_time, tt_size, tt_size_vs_time);
+				add(tt_time, tt_size, tt_size_vs_time, tt_f_size_vs_time);
 				Scatterplot p_size_vs_time = new Scatterplot(tt_size_vs_time);
 				p_size_vs_time.withLines(false);
 				add(p_size_vs_time);				
+				Scatterplot p_f_size_vs_time = new Scatterplot(tt_f_size_vs_time);
+				p_f_size_vs_time.withLines(false);
+				add(p_f_size_vs_time);
 			}
 		}
 
 		// Comparison with ACTS on t-way
-		if (include_acts)
+		if (placeholders || include_acts)
 		{
 			// The factory to generate experiments
 			Group g = new Group("Test suite generation experiments (combinatorial coverage)");
@@ -209,7 +242,7 @@ public class MyLaboratory extends Laboratory
 					{
 						continue;
 					}
-					TestGenerationExperiment e = factory.get(f_r);
+					TestGenerationExperiment e = factory.get(f_r, include_acts);
 					if (e == null)
 					{
 						continue;
@@ -238,7 +271,7 @@ public class MyLaboratory extends Laboratory
 		}
 
 		// Comparison merged vs. global
-		if (include_comparison)
+		if (placeholders || include_comparison)
 		{
 			Group g = new Group("Merged vs. global test suite generation");
 			add(g);
@@ -271,11 +304,11 @@ public class MyLaboratory extends Laboratory
 				et_size.setNickname(LatexNamer.latexify("ttMergedVsGlobalSize" + criteria));
 				ExperimentTable et_time = new ExperimentTable(TIME_GLOBAL, TIME_MERGED);
 				et_time.setTitle("Time comparison between global and merged " + criteria);
-				et_size.setNickname(LatexNamer.latexify("ttMergedVsGlobalTime" + criteria));
+				et_time.setNickname(LatexNamer.latexify("ttMergedVsGlobalTime" + criteria));
 				add(et_size, et_time);
 				for (Region f_r : c_r.all(FORMULA))
 				{
-					CriterionFusionExperiment cfe = factory.get(f_r);
+					CriterionFusionExperiment cfe = factory.get(f_r, include_comparison);
 					if (cfe == null)
 					{
 						continue;
@@ -298,12 +331,16 @@ public class MyLaboratory extends Laboratory
 				add(p_time);
 			}
 		}
+		
+		// Lab stats
+		add(new LabStats(this));
+		add(new NumRerunsMacro(this));
 	}
 
 	protected static void addFormulas(OperatorProvider provider)
 	{
 		int num_formulas = 10; // Normally 20, set to a smaller number for tests
-		DnfOperatorPicker picker = new DnfOperatorPicker(new RandomInteger(1,10), new RandomInteger(2,20), new RandomFloat(), new RandomBoolean());
+		DnfOperatorPicker picker = new DnfOperatorPicker(new RandomInteger(2,14), new RandomInteger(2,20), new RandomFloat(), new RandomBoolean());
 		for (int i = 1; i <= num_formulas; i++)
 		{
 			provider.add("TCAS " + i, TCASBenchmark.getFormula(i));

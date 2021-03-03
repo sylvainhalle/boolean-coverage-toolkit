@@ -46,9 +46,11 @@ public class MinMaxCoverage extends MacroMap
 	 */
 	public MinMaxCoverage(Laboratory lab, String suffix, CoverageTable table)
 	{
-		super(lab, new String[] {"minCoverage" + suffix, "maxCoverage" + suffix});
+		super(lab);
 		m_suffix = suffix;
 		m_table = table;
+		add("minCoverage" + suffix, "The minimum coverage ratio obtained on a formula and a given criterion for method " + suffix);
+		add("maxCoverage" + suffix, "The maximum coverage ratio obtained on a formula and a given criterion for method " + suffix);
 	}
 
 	@Override

@@ -33,7 +33,11 @@ public class FormulaStats extends MacroMap
 	
 	public FormulaStats(Laboratory lab, OperatorProvider provider)
 	{
-		super(lab, "maxformuladepth", "maxoperators", "maxvariables", "numformulas");
+		super(lab);
+		add("maxformuladepth", "The maximum nesting depth of all formulas in the lab");
+		add("maxoperators", "The maximum number of operators in all formulas in the lab");
+		add("maxvariables", "The maximum number of variables in all formulas in the lab");
+		add("numformulas", "The number of distinct Boolean formulas contained in the lab");
 		m_provider = provider;
 	}
 

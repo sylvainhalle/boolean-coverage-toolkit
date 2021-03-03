@@ -50,7 +50,7 @@ public class TestSuiteGenerationFactory extends FormulaBasedExperimentFactory<Te
 	/**
 	 * The name of criterion "MC/DC coverage"
 	 */
-	public static final transient String C_MCDC = "MC/DC";
+	public static final transient String C_MCDC = "MC-DC";
 	
 	/**
 	 * The name of criterion "2-way"
@@ -147,6 +147,10 @@ public class TestSuiteGenerationFactory extends FormulaBasedExperimentFactory<Te
 		{
 			return getActsExperiment(op, formula_name, r.getString(CRITERION));
 		}
+		if (method.compareTo(MCDCTestGenerationExperiment.NAME) == 0)
+		{
+			return getMCDCExperiment(op, formula_name, r.getString(CRITERION));
+		}
 		return null;
 	}
 
@@ -162,6 +166,14 @@ public class TestSuiteGenerationFactory extends FormulaBasedExperimentFactory<Te
 	{
 		Set<Truncation> truncations = getTruncations(formula, criterion);
 		RandomTestGenerationExperiment e = new RandomTestGenerationExperiment(formula, formula_name, truncations);
+		e.setInput(CRITERION, criterion);
+		return e;
+	}
+	
+	protected static MCDCTestGenerationExperiment getMCDCExperiment(Operator formula, String formula_name, String criterion)
+	{
+		Set<Truncation> truncations = getTruncations(formula, criterion);
+		MCDCTestGenerationExperiment e = new MCDCTestGenerationExperiment(formula, formula_name, truncations);
 		e.setInput(CRITERION, criterion);
 		return e;
 	}

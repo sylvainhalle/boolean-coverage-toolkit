@@ -15,64 +15,33 @@
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package ca.uqac.lif.mcdc;
+package mcdclab;
 
-import java.util.Set;
-
-public class Atom extends Operator
+/**
+ * An object that keeps track of an incrementing count.
+ */
+public class Counter
 {
-	protected String m_name;
+	protected int m_count;
 	
-	public Atom(String name)
+	public Counter()
 	{
 		super();
-		m_name = name;
+		m_count = 0;
 	}
 	
-	/**
-	 * Gets the name of this atom.
-	 * @return The name
-	 */
-	public String getName()
+	public void reset()
 	{
-		return m_name;
+		m_count = 0;
 	}
 	
-	@Override
-	public HologramNode evaluate(Valuation v)
+	public void addTo(int x)
 	{
-		HologramNode n = new HologramNode(m_name);
-		n.setValue(v.get(m_name));
-		return n;
-	}
-
-	@Override
-	public Atom duplicate(boolean with_state) 
-	{
-		return new Atom(m_name);
+		m_count += x;
 	}
 	
-	@Override
-	protected void getVariables(Set<String> vars)
+	public int get()
 	{
-		vars.add(m_name);
-	}
-	
-	@Override
-	public int getSize()
-	{
-		return 1;
-	}
-
-	@Override
-	protected void toString(StringBuilder out)
-	{
-		out.append(m_name);
-	}
-
-	@Override
-	public int getDepth()
-	{
-		return 1;
+		return m_count;
 	}
 }

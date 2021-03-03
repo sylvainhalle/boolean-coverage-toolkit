@@ -43,6 +43,11 @@ public class RandomTestGenerationExperiment extends HittingSetTestGenerationExpe
 	 */
 	public static final transient String NAME = "Random";
 	
+	/**
+	 * The number of times a test suite is randomly generated
+	 */
+	public static final transient int NUM_RERUNS = 10;
+	
 	public RandomTestGenerationExperiment(Operator formula, String formula_name, Set<Truncation> truncations) 
 	{
 		super(formula, formula_name, truncations);
@@ -58,7 +63,6 @@ public class RandomTestGenerationExperiment extends HittingSetTestGenerationExpe
 	@Override
 	public void execute() throws ExperimentException, InterruptedException 
 	{
-		
 		write(SIZE, 0);
 		write(TIME, 0);
 		Hypergraph h = HypergraphGenerator.getGraph(m_formula, m_truncations);
@@ -66,15 +70,21 @@ public class RandomTestGenerationExperiment extends HittingSetTestGenerationExpe
 		target_size = HittingSetRunner.runHittingSet(h).size();
 		RandomBoolean bool = new RandomBoolean();
 		ValuationPicker picker = new ValuationPicker(bool, m_formula.getSortedVariables());
-		Set<Valuation> suite = new HashSet<Valuation>(target_size);
+		float best_coverage = 0;
+		CategoryCoverage cov = new CategoryCoverage(m_truncations);
 		long start = System.currentTimeMillis();
-		for (int i = 0; i < target_size; i++)
+		for (int run = 0; run < NUM_RERUNS; run++)
 		{
-			suite.add(picker.pick());
+			Set<Valuation> suite = new HashSet<Valuation>(target_size);
+			
+			for (int i = 0; i < target_size; i++)
+			{
+				suite.add(picker.pick());
+			}
+			best_coverage = Math.max(best_coverage, cov.getCoverage(m_formula, suite));
 		}
 		long end = System.currentTimeMillis();
-		CategoryCoverage cov = new CategoryCoverage(m_truncations);
-		write(COVERAGE, cov.getCoverage(m_formula, suite));
+		write(COVERAGE, best_coverage);
 		write(SIZE, target_size);
 		write(TIME, end - start);
 	}

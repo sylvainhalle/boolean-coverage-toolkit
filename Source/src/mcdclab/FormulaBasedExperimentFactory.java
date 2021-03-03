@@ -17,23 +17,54 @@
  */
 package mcdclab;
 
+import java.util.Collection;
+
+import ca.uqac.lif.labpal.Experiment;
 import ca.uqac.lif.labpal.ExperimentFactory;
+import ca.uqac.lif.labpal.Region;
 
 /**
  * Base class to all factories in this lab.
  *
  * @param <E> The type of experiments produced by the factoy
  */
-public abstract class FormulaBasedExperimentFactory<E extends FormulaBasedExperiment> extends ExperimentFactory<MyLaboratory,E>
+public abstract class FormulaBasedExperimentFactory<T extends FormulaBasedExperiment> extends ExperimentFactory<MyLaboratory,T>
 {
 	/**
 	 * A provider for formulas
 	 */
 	protected transient OperatorProvider m_provider;
-	
-	public FormulaBasedExperimentFactory(MyLaboratory lab, Class<E> clazz, OperatorProvider provider)
+
+	public FormulaBasedExperimentFactory(MyLaboratory lab, Class<T> clazz, OperatorProvider provider)
 	{
 		super(lab, clazz);	
 		m_provider = provider;
+	}
+
+	@SuppressWarnings("unchecked")
+	public T get(Region r, boolean include)
+	{
+		T exp = null;
+		Collection<Experiment> col = m_lab.filterExperiments(r, m_class);
+		if (col.isEmpty())
+		{
+			// Experiment does not exist
+			if (include)
+			{
+				exp = createExperiment(r);
+				if (exp != null)
+				{
+					m_lab.add(exp);
+				}
+			}
+		}
+		else
+		{
+			for (Experiment e : col)
+			{
+				exp = (T) e;
+			}
+		}
+		return exp;
 	}
 }

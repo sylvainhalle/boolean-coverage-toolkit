@@ -62,6 +62,12 @@ public abstract class FormulaBasedExperiment extends Experiment
 		m_formula = formula;
 	}
 	
+	@Override
+	public int countDataPoints()
+	{
+		return 3;
+	}
+	
 	/**
 	 * Reads a float from an experiment parameter. This convenience method
 	 * circumvents a known bug in {@link Experiment#readFloat(String)} that

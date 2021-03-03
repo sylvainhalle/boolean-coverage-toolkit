@@ -28,6 +28,13 @@ import ca.uqac.lif.synthia.random.RandomInteger;
 public class AtomPicker implements Picker<Atom>
 {
 	/**
+	 * Alphabet for producing variable names
+	 */
+	protected static final String[] s_alphabet = {"a", "b", "c", "d", "e", "f",
+			"g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s",
+			"t", "u", "v", "w", "x", "y", "z"};
+	
+	/**
 	 * The list of atoms
 	 */
 	protected List<Atom> m_atoms;
@@ -100,7 +107,7 @@ public class AtomPicker implements Picker<Atom>
 		Atom[] atoms = new Atom[num_atoms];
 		for (int i = 0; i < num_atoms; i++)
 		{
-			atoms[i] = new Atom("x" + i);
+			atoms[i] = new Atom(s_alphabet[i]);
 		}
 		return atoms;
 	}

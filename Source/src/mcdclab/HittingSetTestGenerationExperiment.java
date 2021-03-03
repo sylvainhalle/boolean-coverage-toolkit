@@ -21,6 +21,7 @@ import java.util.Set;
 
 import ca.uqac.lif.labpal.ExperimentException;
 import ca.uqac.lif.mcdc.HittingSetRunner;
+import ca.uqac.lif.mcdc.HologramNode;
 import ca.uqac.lif.mcdc.Hypergraph;
 import ca.uqac.lif.mcdc.HypergraphGenerator;
 import ca.uqac.lif.mcdc.Operator;
@@ -37,6 +38,11 @@ public class HittingSetTestGenerationExperiment extends TestGenerationExperiment
 	 * The truncations used to generate equivalence classes.
 	 */
 	protected transient Truncation[] m_truncations;
+	
+	static
+	{
+		warmUp();
+	}
 	
 	/**
 	 * Creates a new experiment.
@@ -82,5 +88,19 @@ public class HittingSetTestGenerationExperiment extends TestGenerationExperiment
 		write(SIZE, size);
 		write(TIME, end - start);
 		write(COVERAGE, 1);
+	}
+	
+	/**
+	 * Runs a dummy hitting set problem. This forces the JVM to load the
+	 * Clojure classes before running the first experiment, which factors out
+	 * this initial loading time. Otherwise, the first hitting set experiment
+	 * always shows as an outlier in terms of running time, regardless of
+	 * which one it is.
+	 */
+	protected static void warmUp()
+	{
+		Hypergraph h = new Hypergraph();
+		h.addTo(new HologramNode("?", false), 0);
+		HittingSetRunner.runHittingSet(h);
 	}
 }

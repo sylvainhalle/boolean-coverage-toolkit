@@ -15,64 +15,26 @@
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package ca.uqac.lif.mcdc;
+package mcdclab;
 
-import java.util.Set;
+import ca.uqac.lif.json.JsonNumber;
+import ca.uqac.lif.labpal.Laboratory;
+import ca.uqac.lif.labpal.macro.MacroScalar;
 
-public class Atom extends Operator
+/**
+ * Macro that tracks the number of times the random generation algorithm
+ * is re-run.
+ */
+public class NumRerunsMacro extends MacroScalar
 {
-	protected String m_name;
-	
-	public Atom(String name)
+	public NumRerunsMacro(Laboratory lab) 
 	{
-		super();
-		m_name = name;
-	}
-	
-	/**
-	 * Gets the name of this atom.
-	 * @return The name
-	 */
-	public String getName()
-	{
-		return m_name;
-	}
-	
-	@Override
-	public HologramNode evaluate(Valuation v)
-	{
-		HologramNode n = new HologramNode(m_name);
-		n.setValue(v.get(m_name));
-		return n;
+		super(lab, "numreruns", "The number of times the random generation algorithm is re-run");
 	}
 
 	@Override
-	public Atom duplicate(boolean with_state) 
+	public JsonNumber getValue()
 	{
-		return new Atom(m_name);
-	}
-	
-	@Override
-	protected void getVariables(Set<String> vars)
-	{
-		vars.add(m_name);
-	}
-	
-	@Override
-	public int getSize()
-	{
-		return 1;
-	}
-
-	@Override
-	protected void toString(StringBuilder out)
-	{
-		out.append(m_name);
-	}
-
-	@Override
-	public int getDepth()
-	{
-		return 1;
+		return new JsonNumber(RandomTestGenerationExperiment.NUM_RERUNS);
 	}
 }

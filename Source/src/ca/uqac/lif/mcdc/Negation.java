@@ -47,6 +47,11 @@ public class Negation extends Operator
 		m_operand = operand;
 	}
 	
+	public Operator getOperand()
+	{
+		return m_operand;
+	}
+	
 	@Override
 	public HologramNode evaluate(Valuation v) 
 	{

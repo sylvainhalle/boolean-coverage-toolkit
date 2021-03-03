@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import ca.uqac.lif.labpal.Experiment;
 import ca.uqac.lif.labpal.NumberHelper;
 import ca.uqac.lif.labpal.provenance.ExperimentValue;
 import ca.uqac.lif.mtnp.table.Table;
@@ -130,7 +129,7 @@ public class CriteriaRatioTable extends Table
 			String category = entry.getKey();
 			Set<NodeFunction> deps = new HashSet<NodeFunction>();
 			float ratio = 0, n = 0;
-			for (Experiment e : entry.getValue())
+			for (FormulaBasedExperiment e : entry.getValue())
 			{
 				float v1 = e.readFractional(m_parameter1);
 				float v2 = e.readFractional(m_parameter2);

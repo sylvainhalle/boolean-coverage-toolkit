@@ -57,6 +57,15 @@ public class Conjunction extends Operator
 		}
 	}
 	
+	/**
+	 * Gets the operands of this operator.
+	 * @return The list of operands
+	 */
+	public List<Operator> getOperands()
+	{
+		return m_operands;
+	}
+	
 	@Override
 	public HologramNode evaluate(Valuation v)
 	{
