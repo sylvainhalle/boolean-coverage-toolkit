@@ -90,12 +90,12 @@ public class TCASBenchmark
 		}
 	}
 
-	protected static Operator getFormula1()
+	protected static Operator getFormula4()
 	{
 		return Or(And(a, Or(Not(b), Not(c)), d), e);
 	}
 
-	protected static Operator getFormula2()
+	protected static Operator getFormula1()
 	{
 		return And(
 				Not(And(a, b)),
@@ -112,7 +112,7 @@ public class TCASBenchmark
 				);
 	}
 
-	protected static Operator getFormula3()
+	protected static Operator getFormula9()
 	{
 		return And(
 				Not(And(c, d)),
@@ -120,7 +120,7 @@ public class TCASBenchmark
 				);
 	}
 
-	protected static Operator getFormula4()
+	protected static Operator getFormula14()
 	{
 		return Or(
 				And(a, c, Or(d, e), h),
@@ -129,7 +129,7 @@ public class TCASBenchmark
 				);
 	}
 
-	protected static Operator getFormula5()
+	protected static Operator getFormula20()
 	{
 		return And(Not(e), f, Not(g), Not(a), Or(And(b, c), And(Not(b), d)));
 	}
@@ -138,7 +138,7 @@ public class TCASBenchmark
 	 * (!ab+a!b)!(cd)!(gh) ((ac+bd)e(fg+!fh))
 	 * @return
 	 */
-	protected static Operator getFormula6()
+	protected static Operator getFormula8()
 	{
 		return And(
 				Or(And(Not(a), b), And(a, Not(b))),
@@ -151,12 +151,31 @@ public class TCASBenchmark
 						)
 				);
 	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	protected static Operator getFormula7()
+	{
+		return And(
+				Or(And(Not(a), b), And(a, Not(b))),
+				Not(And(c, d)),
+				Not(And(g, h)),
+				Not(And(j, k)),
+				And(
+						Or(And(a, c), And(b, d)),
+						e,
+						Or(Not(i), And(Not(g), Not(k)), And(j, Or(Not(h), Not(k))))
+						)
+				);
+	}
 
 	/**
 	 * (ac+bd)e(fg+!fh)
 	 * @return
 	 */
-	protected static Operator getFormula7()
+	protected static Operator getFormula19()
 	{
 		return And(
 				Or(And(a, c), And(b, d)),
@@ -169,7 +188,7 @@ public class TCASBenchmark
 	 * (a((c+d+e)g+af+c(f+g+h+i)) + (a+b)(c+d+e)i)  !(ab)!(cd)!(ce)!(de)!(fg)!(fh)!(fi)!(gh)!(hi)
 	 * @return The formula
 	 */
-	protected static Operator getFormula8()
+	protected static Operator getFormula2()
 	{
 		return And(
 				Or(
@@ -200,7 +219,7 @@ public class TCASBenchmark
 	 * a(!b+!c+bc!(!fgh!i+!ghi)!(!fglk+!g!ik)) +f
 	 * @return The formula
 	 */
-	protected static Operator getFormula9()
+	protected static Operator getFormula5()
 	{
 		return Or(
 				And(a), Or(
@@ -220,7 +239,7 @@ public class TCASBenchmark
 	 * a ((c+d+e)g+af+c(f+g+h+i)) (a+b) (c+d+e) i
 	 * @return The formula
 	 */
-	protected static Operator getFormula10()
+	protected static Operator getFormula15()
 	{
 		return And(
 				a,
@@ -239,7 +258,7 @@ public class TCASBenchmark
 	 * (ac+bd)e(i+!g!k+!j(!h+!k))
 	 * @return The formula
 	 */
-	protected static Operator getFormula11()
+	protected static Operator getFormula18()
 	{
 		return And(
 				Or(And(a, c), And(b, d)),
@@ -261,7 +280,7 @@ public class TCASBenchmark
 	 * (!ab+a!b) !(cd)  (f!g!h+!fg!h+!f!g!h) !(jk)  ((ac+bd)e(f+ (i(gj+hk))))
 	 * @return The formula
 	 */
-	protected static Operator getFormula13()
+	protected static Operator getFormula6()
 	{
 		return And(
 				Or(And(Not(a), b), And(a, Not(b))),
@@ -276,7 +295,7 @@ public class TCASBenchmark
 	 * (ac+bd)e(f+ (i(gj+hk)))
 	 * @return The formula
 	 */
-	protected static Operator getFormula14()
+	protected static Operator getFormula17()
 	{
 		return And(
 				Or(And(a, c), And(b, d)),
@@ -289,7 +308,7 @@ public class TCASBenchmark
 	 * (a(!d+!e+de!(!fgh!i+!ghi)!(!fglk+!g!ik)) + !(!fgh!i+!ghi)!(!fglk+!g!ik)(b+c!m+f)) (a!b!c+!ab!c+!a!bc)
 	 * @return The formula
 	 */
-	protected static Operator getFormula15()
+	protected static Operator getFormula3()
 	{
 		return And(
 				And(a, Or(
@@ -310,7 +329,7 @@ public class TCASBenchmark
 	 * a+b+c+!c!def!g!h+i(j+k)
 	 * @return The formula
 	 */
-	protected static Operator getFormula16()
+	protected static Operator getFormula13()
 	{
 		return Or(
 				a, b, c, And(Not(c), d, e, f, Not(g), Not(h)), And(i, Or(j, k))
@@ -321,7 +340,7 @@ public class TCASBenchmark
 	 * a(!d+!e+de!(!fgh!i+!ghi)!(!fglk+!g!i!k)) + !(fgh!i+!ghi)!(!fglk+!g!ik)(b+c!m+f)
 	 * @return The formula
 	 */
-	protected static Operator getFormula17()
+	protected static Operator getFormula16()
 	{
 		return Or(
 				And(a, Or(Not(d), Not(e), And(d, e, Not(Or(And(Not(f), g, h, Not(i)), And(Not(g), h, i))), Not(Or(And(Not(f), g, l, k), And(Not(g), Not(i), Not(k))))))),
@@ -333,7 +352,7 @@ public class TCASBenchmark
 	 * a!b!c!d!ef(g+!g(h+i))!(jk+!jl+m)
 	 * @return The formula
 	 */
-	protected static Operator getFormula18()
+	protected static Operator getFormula10()
 	{
 		return And(
 				a, Not(b), Not(c), Not(d), Not(e), f, Or(g, And(Not(g), Or(h, i))),
@@ -345,7 +364,7 @@ public class TCASBenchmark
 	 * a!b!c(!f(g+!f(h+i))) +f(g+!g(h+i)!d!e)!(jk+!jl!m)
 	 * @return The formula
 	 */
-	protected static Operator getFormula19()
+	protected static Operator getFormula11()
 	{
 		return Or(
 				And(a, Not(b), And(c, And(Not(f), Or(g, And(Not(f), Or(h, i)))))),
@@ -357,7 +376,7 @@ public class TCASBenchmark
 	 * a!b!c(f(g+!g(h+i)))(!e!n+d) + !n(jk+!jl!m)
 	 * @return The formula
 	 */
-	protected static Operator getFormula20()
+	protected static Operator getFormula20Safecomp() // Formula 20 of SAFECOMP, not found in APSEC99
 	{
 		return Or(
 				And(a, Not(b), Not(c), And(f, (Or(g, And(Not(g), Or(h, i))))), And(Not(e), Not(n), Not(d))),
