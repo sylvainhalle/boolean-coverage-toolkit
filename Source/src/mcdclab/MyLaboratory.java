@@ -17,21 +17,25 @@
  */
 package mcdclab;
 
+import ca.uqac.lif.labpal.ExperimentBuilder;
 import ca.uqac.lif.labpal.Group;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.LatexNamer;
 import ca.uqac.lif.labpal.Region;
+import ca.uqac.lif.labpal.ExperimentBuilder.ParseException;
 import ca.uqac.lif.labpal.table.ExperimentTable;
 import ca.uqac.lif.mcdc.ObjectIdentifier;
 import ca.uqac.lif.mtnp.plot.gnuplot.Scatterplot;
 import ca.uqac.lif.mtnp.table.ExpandAsColumns;
 import ca.uqac.lif.mtnp.table.TransformedTable;
+import ca.uqac.lif.mtnp.util.FileHelper;
 import ca.uqac.lif.synthia.random.RandomBoolean;
 import ca.uqac.lif.synthia.random.RandomFloat;
 import ca.uqac.lif.synthia.random.RandomInteger;
 
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.Set;
 
 import static mcdclab.CriterionFusionExperiment.CRITERIA;
@@ -59,12 +63,13 @@ public class MyLaboratory extends Laboratory
 		// Metadata
 		setAuthor("Sylvain Hallé");
 		setTitle("Boolean condition coverage with evaluation trees");
-		
-		boolean include_random = true;
-		boolean include_safecomp = true;
+
+		boolean include_random = false;
+		boolean include_safecomp = false;
 		boolean include_comparison = false;
-		boolean include_acts = true;
-		
+		boolean include_acts = false;
+		boolean include_mumcut = true;
+
 		/* If set to true, sets of experiments that are excluded from the lab
 		   will still create the instances of tables, plots and macros
 		   associated to these experiments, even though the experiments
@@ -120,7 +125,7 @@ public class MyLaboratory extends Laboratory
 		{
 			Group g = new Group("Test suite generation experiments (MC/DC coverage)");
 			add(g);
-			
+
 			RatioMacro rm_size = new RatioMacro(this, "sizeRatioMCDC", SIZE, FORMULA, "Ratio between test suite size of hypergraph vs MCDC");
 			RatioMacro rm_time = new RatioMacro(this, "timeRatioMCDC", TIME, FORMULA, "Ratio between test suite time of hypergraph vs MCDC");
 			add(rm_size, rm_time);
@@ -331,7 +336,25 @@ public class MyLaboratory extends Laboratory
 				add(p_time);
 			}
 		}
-		
+
+		// Comparison with MUMCUT
+		if (placeholders || include_mumcut)
+		{
+			// A big region encompassing all the lab's parameters
+			Region big_r = new Region();
+			big_r.add(CRITERIA, 
+					CriterionFusionExperimentFactory.C_MCDC_PREDICATE, 
+					CriterionFusionExperimentFactory.C_MCDC_2WAY,
+					CriterionFusionExperimentFactory.C_CLAUSE_2WAY);
+			OperatorProvider op_provider = new OperatorProvider();
+			addFormulas(op_provider);
+			big_r.add(FORMULA, op_provider.getNames());
+			addFormulas(op_provider);
+			big_r.add(FORMULA, op_provider.getNames());
+			Scanner scanner = new Scanner(FileHelper.internalFileToStream(MyLaboratory.class, "/mcdclab/results/chen1999.csv"));
+			WriteInExperiment.addToLab(this, scanner, op_provider, "Chen", TestSuiteGenerationFactory.C_MUMCUT);
+		}
+
 		// Lab stats
 		add(new LabStats(this));
 		add(new NumRerunsMacro(this));

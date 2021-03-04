@@ -63,5 +63,20 @@ public abstract class TestGenerationExperiment extends FormulaBasedExperiment
 		describe(SIZE, "The size of the generated test suite");
 		describe(TIME, "The time (in ms) taken to generate the test suite");
 		describe(COVERAGE, "The coverage achieved by the generated test suite");
+	}
+	
+	/**
+	 * Creates a new experiment.
+	 * @param formula The formula to generate coverage for
+	 * @param formula_name A name given to the formula
+	 */
+	public TestGenerationExperiment(Operator formula, String formula_name, Status status)
+	{
+		super(formula, formula_name, status);
+		describe(METHOD, "The method used to generate test suites");
+		describe(CRITERION, "The method used to generate test suites");
+		describe(SIZE, "The size of the generated test suite");
+		describe(TIME, "The time (in ms) taken to generate the test suite");
+		describe(COVERAGE, "The coverage achieved by the generated test suite");
 	}	
 }
