@@ -19,6 +19,8 @@ package mcdclab;
 
 import ca.uqac.lif.labpal.Region;
 import ca.uqac.lif.mcdc.KeepIfDetermines;
+import ca.uqac.lif.mcdc.KeepIfMultipleNearFalsePoint;
+import ca.uqac.lif.mcdc.KeepIfMultipleUniqueTruePoint;
 import ca.uqac.lif.mcdc.KeepNthClause;
 import ca.uqac.lif.mcdc.KeepValuesOf;
 import ca.uqac.lif.mcdc.Operator;
@@ -112,6 +114,11 @@ public class TestSuiteGenerationFactory extends FormulaBasedExperimentFactory<Te
 		{
 			out_set.addAll(KeepValuesOf.generateTWay(1, formula));
 		}
+		else if (criterion.compareTo(C_MUMCUT) == 0)
+		{
+			out_set.addAll(KeepIfMultipleUniqueTruePoint.generateMUTPCoverage(formula));
+			out_set.addAll(KeepIfMultipleNearFalsePoint.generateMNFPCoverage(formula));
+		}
 		return out_set;
 	}
 	
@@ -151,6 +158,10 @@ public class TestSuiteGenerationFactory extends FormulaBasedExperimentFactory<Te
 		{
 			return getMCDCExperiment(op, formula_name, r.getString(CRITERION));
 		}
+		if (method.compareTo(Apsec99TestGenerationExperiment.NAME) == 0)
+		{
+			return getApsec99Experiment(op, formula_name, r.getString(CRITERION));
+		}
 		return null;
 	}
 
@@ -170,8 +181,20 @@ public class TestSuiteGenerationFactory extends FormulaBasedExperimentFactory<Te
 		return e;
 	}
 	
+	protected static Apsec99TestGenerationExperiment getApsec99Experiment(Operator formula, String formula_name, String criterion)
+	{
+		// Don't care returning something; since all APSEC experiments are
+		// created beforehand, this method is not supposed to be called
+		return null;
+	}
+	
 	protected static MCDCTestGenerationExperiment getMCDCExperiment(Operator formula, String formula_name, String criterion)
 	{
+		if (!criterion.endsWith("DC"))
+		{
+			// mcdc only works for MC/DC coverage
+			return null;
+		}
 		Set<Truncation> truncations = getTruncations(formula, criterion);
 		MCDCTestGenerationExperiment e = new MCDCTestGenerationExperiment(formula, formula_name, truncations);
 		e.setInput(CRITERION, criterion);

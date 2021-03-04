@@ -188,4 +188,36 @@ public class HologramNode
 			}
 		}
 	}
+	
+	/**
+	 * Determines if a hologram node or one of its descendants has a certain
+	 * label.
+	 * @param name The label to look for
+	 * @return <tt>true</tt> if this label appears somewhere, <tt>false</tt>
+	 * otherwise
+	 */
+	public boolean hasLabel(String name)
+	{
+		if (m_label.compareTo(name) == 0)
+		{
+			return true;
+		}
+		for (HologramNode child : m_children)
+		{
+			if (child.hasLabel(name))
+			{
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Creates a new instance of dummy node.
+	 * @return The node
+	 */
+	public static HologramNode dummyNode()
+	{
+		return new HologramNode(HologramNode.DUMMY_SYMBOL, null);
+	}
 }

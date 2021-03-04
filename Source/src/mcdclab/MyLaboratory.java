@@ -17,12 +17,10 @@
  */
 package mcdclab;
 
-import ca.uqac.lif.labpal.ExperimentBuilder;
 import ca.uqac.lif.labpal.Group;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.LatexNamer;
 import ca.uqac.lif.labpal.Region;
-import ca.uqac.lif.labpal.ExperimentBuilder.ParseException;
 import ca.uqac.lif.labpal.table.ExperimentTable;
 import ca.uqac.lif.mcdc.ObjectIdentifier;
 import ca.uqac.lif.mtnp.plot.gnuplot.Scatterplot;
@@ -275,6 +273,51 @@ public class MyLaboratory extends Laboratory
 			}
 		}
 
+		// Comparison with MUMCUT
+		if (placeholders || include_mumcut)
+		{
+			Group g = new Group("Test suite generation experiments (MUMCUT coverage)");
+			add(g);
+
+			// A big region encompassing all the lab's parameters
+			Region big_r = new Region();
+			big_r.add(METHOD, HittingSetTestGenerationExperiment.NAME, Apsec99TestGenerationExperiment.NAME);
+			big_r.add(CRITERION, TestSuiteGenerationFactory.C_MUMCUT);
+			OperatorProvider op_provider = new OperatorProvider();
+			addFormulas(op_provider);
+			big_r.add(FORMULA, op_provider.getNames());
+			Scanner scanner = new Scanner(FileHelper.internalFileToStream(MyLaboratory.class, "/mcdclab/results/chen1999.csv"));
+			Apsec99TestGenerationExperiment.addToLab(this, scanner, op_provider);
+			// The factory to generate experiments
+			TestSuiteGenerationFactory factory = new TestSuiteGenerationFactory(this, op_provider);
+			for (Region c_r : big_r.all(CRITERION))
+			{
+				String criterion = c_r.getString(CRITERION);
+				ExperimentTable et_size = new ExperimentTable(FORMULA, METHOD, SIZE);
+				et_size.setShowInList(false);
+				TransformedTable tt_size = new TransformedTable(new ExpandAsColumns(METHOD, SIZE), et_size);
+				tt_size.setTitle("Test suite size " + criterion);
+				tt_size.setNickname(LatexNamer.latexify("ttSize" + criterion));
+				add(tt_size);
+				for (Region f_r : big_r.all(METHOD, FORMULA))
+				{
+					if (!f_r.getString(FORMULA).startsWith("TCAS"))
+					{
+						// Can only compare on TCAS benchmark
+						continue;
+					}
+					TestGenerationExperiment e = factory.get(f_r, include_mumcut);
+					if (e == null)
+					{
+						continue;
+					}
+					g.add(e);
+					et_size.add(e);
+					//et_coverage_random.add(e);
+				}
+			}
+		}
+
 		// Comparison merged vs. global
 		if (placeholders || include_comparison)
 		{
@@ -335,24 +378,6 @@ public class MyLaboratory extends Laboratory
 				p_time.setNickname(LatexNamer.latexify("pMergedVsGlobalTime" + criteria));
 				add(p_time);
 			}
-		}
-
-		// Comparison with MUMCUT
-		if (placeholders || include_mumcut)
-		{
-			// A big region encompassing all the lab's parameters
-			Region big_r = new Region();
-			big_r.add(CRITERIA, 
-					CriterionFusionExperimentFactory.C_MCDC_PREDICATE, 
-					CriterionFusionExperimentFactory.C_MCDC_2WAY,
-					CriterionFusionExperimentFactory.C_CLAUSE_2WAY);
-			OperatorProvider op_provider = new OperatorProvider();
-			addFormulas(op_provider);
-			big_r.add(FORMULA, op_provider.getNames());
-			addFormulas(op_provider);
-			big_r.add(FORMULA, op_provider.getNames());
-			Scanner scanner = new Scanner(FileHelper.internalFileToStream(MyLaboratory.class, "/mcdclab/results/chen1999.csv"));
-			WriteInExperiment.addToLab(this, scanner, op_provider, "Chen", TestSuiteGenerationFactory.C_MUMCUT);
 		}
 
 		// Lab stats

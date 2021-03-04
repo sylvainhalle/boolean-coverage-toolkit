@@ -20,15 +20,22 @@ package ca.uqac.lif.mcdc;
 import java.util.HashSet;
 import java.util.Set;
 
-public class KeepIfMultipleUniqueTruePoint extends ClauseBasedTruncation
+public class KeepIfMultipleNearFalsePoint extends ClauseBasedTruncation
 {
+	/**
+	 * The variable to focus on
+	 */
+	protected String m_variableName;
+	
 	/**
 	 * Creates a new instance of the truncation.
 	 * @param clause_nb The number of the clause to keep
+	 * @param variable The variable to focus on
 	 */
-	public KeepIfMultipleUniqueTruePoint(int clause_nb)
+	public KeepIfMultipleNearFalsePoint(int clause_nb, String variable)
 	{
 		super(clause_nb);
+		m_variableName = variable;
 	}
 
 	@Override
@@ -36,16 +43,38 @@ public class KeepIfMultipleUniqueTruePoint extends ClauseBasedTruncation
 	{
 		if (n.m_children.size() <= m_clauseNb)
 		{
+			// Tree has fewer clauses than the one we look at
 			return HologramNode.dummyNode();
 		}
 		for (int i = 0; i < n.m_children.size(); i++)
 		{
 			HologramNode c = n.m_children.get(i);
-			if (i != m_clauseNb && c.getValue() != null && c.getValue() == true)
+			if (i != m_clauseNb && c.getValue() != null && c.getValue() == false)
 			{
-				// Another clause is true, so no unique true point
+				// Another clause is false, so no near false point
 				return HologramNode.dummyNode();
 			}
+		}
+		// clause_nb is the only false clause.
+		HologramNode clause = n.getChildren().get(m_clauseNb);
+		boolean seen_var = false;
+		int num_false = 0;
+		for (HologramNode child : clause.getChildren())
+		{
+			if (child.hasLabel(m_variableName))
+			{
+				seen_var = true;
+			}
+			if (child.getValue() != null && child.getValue() == false)
+			{
+				num_false++;
+			}
+		}
+		if (!seen_var || num_false != 1)
+		{
+			// Either the variable is not in the clause, or it contains
+			// more than one false term, so no near false point
+			return HologramNode.dummyNode();
 		}
 		return getLeavesForOtherVariables(n);
 	}
@@ -56,13 +85,17 @@ public class KeepIfMultipleUniqueTruePoint extends ClauseBasedTruncation
 	 * @param phi The formula
 	 * @return The set of transformations
 	 */
-	public static Set<Truncation> generateMUTPCoverage(Operator phi)
+	public static Set<Truncation> generateMNFPCoverage(Operator phi)
 	{
 		int num_clauses = countClauses(phi);
+		Set<String> vars = phi.getVariables();
 		Set<Truncation> out_set = new HashSet<Truncation>(num_clauses);
-		for (int i = 0; i < num_clauses; i++)
+		for (String v : vars)
 		{
-			out_set.add(new KeepIfMultipleUniqueTruePoint(i));
+			for (int i = 0; i < num_clauses; i++)
+			{
+				out_set.add(new KeepIfMultipleNearFalsePoint(i, v));
+			}
 		}
 		return out_set;
 	}
