@@ -22,13 +22,16 @@ import java.util.Set;
 
 public class KeepIfMultipleUniqueTruePoint extends ClauseBasedTruncation
 {
+	protected String m_variableToGet;
+	
 	/**
 	 * Creates a new instance of the truncation.
 	 * @param clause_nb The number of the clause to keep
 	 */
-	public KeepIfMultipleUniqueTruePoint(int clause_nb)
+	public KeepIfMultipleUniqueTruePoint(int clause_nb, String to_get)
 	{
 		super(clause_nb);
+		m_variableToGet = to_get;
 	}
 
 	@Override
@@ -47,7 +50,7 @@ public class KeepIfMultipleUniqueTruePoint extends ClauseBasedTruncation
 				return HologramNode.dummyNode();
 			}
 		}
-		return getLeavesForOtherVariables(n);
+		return HologramNode.getLeafForOtherVariable(n, m_clauseNb, m_variableToGet);
 	}
 	
 	/**
@@ -60,9 +63,13 @@ public class KeepIfMultipleUniqueTruePoint extends ClauseBasedTruncation
 	{
 		int num_clauses = countClauses(phi);
 		Set<Truncation> out_set = new HashSet<Truncation>(num_clauses);
-		for (int i = 0; i < num_clauses; i++)
+		Set<String> vars = phi.getVariables();
+		for (String v : vars)
 		{
-			out_set.add(new KeepIfMultipleUniqueTruePoint(i));
+			for (int i = 0; i < num_clauses; i++)
+			{
+				out_set.add(new KeepIfMultipleUniqueTruePoint(i, v));
+			}
 		}
 		return out_set;
 	}

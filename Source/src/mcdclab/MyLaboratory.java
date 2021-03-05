@@ -391,7 +391,7 @@ public class MyLaboratory extends Laboratory
 		DnfOperatorPicker picker = new DnfOperatorPicker(new RandomInteger(2,14), new RandomInteger(2,20), new RandomFloat(), new RandomBoolean());
 		for (int i = 1; i <= num_formulas; i++)
 		{
-			provider.add("TCAS " + i, TCASBenchmark.getFormula(i));
+			provider.add("TCAS " + i, TCASBenchmarkDNF.getFormula(i));
 		}
 		for (int i = 1; i < num_formulas; i++)
 		{

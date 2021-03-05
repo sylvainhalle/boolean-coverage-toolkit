@@ -18,6 +18,7 @@
 package mcdclab;
 
 import ca.uqac.lif.labpal.Region;
+import ca.uqac.lif.mcdc.KeepIfCutpNfp;
 import ca.uqac.lif.mcdc.KeepIfDetermines;
 import ca.uqac.lif.mcdc.KeepIfMultipleNearFalsePoint;
 import ca.uqac.lif.mcdc.KeepIfMultipleUniqueTruePoint;
@@ -118,6 +119,7 @@ public class TestSuiteGenerationFactory extends FormulaBasedExperimentFactory<Te
 		{
 			out_set.addAll(KeepIfMultipleUniqueTruePoint.generateMUTPCoverage(formula));
 			out_set.addAll(KeepIfMultipleNearFalsePoint.generateMNFPCoverage(formula));
+			out_set.addAll(KeepIfCutpNfp.generateCUTPNFPCoverage(formula));
 		}
 		return out_set;
 	}

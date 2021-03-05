@@ -40,7 +40,7 @@ public class KeepIfDetermines extends VariableBasedTruncation
 	@Override
 	public HologramNode applyTo(HologramNode n)
 	{
-		HologramNode new_n = determines(n);
+		HologramNode new_n = determines(n, m_name);
 		if (new_n == null)
 		{
 			new_n = new HologramNode(HologramNode.DUMMY_SYMBOL);
@@ -49,34 +49,34 @@ public class KeepIfDetermines extends VariableBasedTruncation
 		return new_n;
 	}
 	
-	protected HologramNode determines(HologramNode n)
+	public static HologramNode determines(HologramNode n, String var_name)
 	{
 		if (n.getLabel().compareTo(Conjunction.SYMBOL) == 0)
 		{
-			return determinesNary(n, true);
+			return determinesNary(n, true, var_name);
 		}
 		else if (n.getLabel().compareTo(Disjunction.SYMBOL) == 0)
 		{
-			return determinesNary(n, false);
+			return determinesNary(n, false, var_name);
 		}
 		else if (n.getLabel().compareTo(Negation.SYMBOL) == 0)
 		{
-			return determines(n.m_children.get(0));
+			return determines(n.m_children.get(0), var_name);
 		}
-		else if (n.getLabel().compareTo(m_name) == 0)
+		else if (n.getLabel().compareTo(var_name) == 0)
 		{
 			return n;
 		}
 		return null;
 	}
 	
-	protected HologramNode determinesNary(HologramNode n, boolean value)
+	protected static HologramNode determinesNary(HologramNode n, boolean value, String var_name)
 	{
 		if (n.getValue() == value)
 		{
 			for (HologramNode c : n.m_children)
 			{
-				HologramNode new_c = determines(c);
+				HologramNode new_c = determines(c, var_name);
 				if (new_c != null)
 				{
 					return new_c;
@@ -89,7 +89,7 @@ public class KeepIfDetermines extends VariableBasedTruncation
 			HologramNode out_c = null;
 			for (HologramNode c : n.m_children)
 			{
-				HologramNode new_c = determines(c);
+				HologramNode new_c = determines(c, var_name);
 				if (new_c == null)
 				{
 					if (c.getValue() == !value)

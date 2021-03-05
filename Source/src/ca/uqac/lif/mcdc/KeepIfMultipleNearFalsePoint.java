@@ -26,25 +26,46 @@ public class KeepIfMultipleNearFalsePoint extends ClauseBasedTruncation
 	 * The variable to focus on
 	 */
 	protected String m_variableName;
-	
+
+	/**
+	 * The variable to fetch the value from
+	 */
+	protected String m_variableToGet;
+
 	/**
 	 * Creates a new instance of the truncation.
 	 * @param clause_nb The number of the clause to keep
 	 * @param variable The variable to focus on
 	 */
-	public KeepIfMultipleNearFalsePoint(int clause_nb, String variable)
+	public KeepIfMultipleNearFalsePoint(int clause_nb, String variable, String to_get)
 	{
 		super(clause_nb);
 		m_variableName = variable;
+		m_variableToGet = to_get;
 	}
 
 	@Override
 	public HologramNode applyTo(HologramNode n)
 	{
+		if (isNFP(n))
+		{
+			return HologramNode.getLeafForOtherVariable(n, m_clauseNb, m_variableToGet);
+		}
+		return HologramNode.dummyNode();
+	}
+
+	/**
+	 * Determines if x is a near-false point of clause i.
+	 * @param n The evaluation tree
+	 * @return <tt>true</tt> if the tree represents an NFP, <tt>false</tt>
+	 * otherwise
+	 */
+	protected boolean isNFP(HologramNode n)
+	{
 		if (n.m_children.size() <= m_clauseNb)
 		{
 			// Tree has fewer clauses than the one we look at
-			return HologramNode.dummyNode();
+			return false;
 		}
 		for (int i = 0; i < n.m_children.size(); i++)
 		{
@@ -52,7 +73,7 @@ public class KeepIfMultipleNearFalsePoint extends ClauseBasedTruncation
 			if (i != m_clauseNb && c.getValue() != null && c.getValue() == false)
 			{
 				// Another clause is false, so no near false point
-				return HologramNode.dummyNode();
+				return false;
 			}
 		}
 		// clause_nb is the only false clause.
@@ -74,14 +95,14 @@ public class KeepIfMultipleNearFalsePoint extends ClauseBasedTruncation
 		{
 			// Either the variable is not in the clause, or it contains
 			// more than one false term, so no near false point
-			return HologramNode.dummyNode();
+			return false;
 		}
-		return getLeavesForOtherVariables(n);
+		return true;
 	}
-	
+
 	/**
-	 * Generates a set of transformations corresponding to multiple unique true
-	 * point (MUTP) coverage for a given formula.
+	 * Generates a set of transformations corresponding to multiple unique false
+	 * point (MNFP) coverage for a given formula.
 	 * @param phi The formula
 	 * @return The set of transformations
 	 */
@@ -90,11 +111,18 @@ public class KeepIfMultipleNearFalsePoint extends ClauseBasedTruncation
 		int num_clauses = countClauses(phi);
 		Set<String> vars = phi.getVariables();
 		Set<Truncation> out_set = new HashSet<Truncation>(num_clauses);
-		for (String v : vars)
+		for (String v1 : vars)
 		{
-			for (int i = 0; i < num_clauses; i++)
+			for (String v2 : vars)
 			{
-				out_set.add(new KeepIfMultipleNearFalsePoint(i, v));
+				if (v1.compareTo(v2) == 0)
+				{
+					continue;
+				}
+				for (int i = 0; i < num_clauses; i++)
+				{
+					out_set.add(new KeepIfMultipleNearFalsePoint(i, v1, v2));
+				}
 			}
 		}
 		return out_set;

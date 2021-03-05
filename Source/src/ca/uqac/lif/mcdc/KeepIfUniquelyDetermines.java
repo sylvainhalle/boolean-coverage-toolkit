@@ -40,7 +40,7 @@ public class KeepIfUniquelyDetermines extends VariableBasedTruncation
 	@Override
 	public HologramNode applyTo(HologramNode n)
 	{
-		HologramNode new_n = determines(n);
+		HologramNode new_n = determines(n, m_name);
 		if (new_n == null)
 		{
 			new_n = new HologramNode("?");
@@ -49,7 +49,7 @@ public class KeepIfUniquelyDetermines extends VariableBasedTruncation
 		return new_n;
 	}
 	
-	protected HologramNode determines(HologramNode n)
+	public static HologramNode determines(HologramNode n, String var_name)
 	{
 		if (n.getLabel().compareTo(Conjunction.SYMBOL) == 0)
 		{
@@ -57,7 +57,7 @@ public class KeepIfUniquelyDetermines extends VariableBasedTruncation
 			{
 				for (HologramNode c : n.m_children)
 				{
-					HologramNode new_c = determines(c);
+					HologramNode new_c = determines(c, var_name);
 					if (new_c != null)
 					{
 						return new_c;
@@ -69,13 +69,13 @@ public class KeepIfUniquelyDetermines extends VariableBasedTruncation
 			{
 				for (HologramNode c : n.m_children)
 				{
-					HologramNode new_c = determines(c);
+					HologramNode new_c = determines(c, var_name);
 					if (new_c == null)
 					{
 						return null;
 					}
 				}
-				return new HologramNode(m_name);
+				return new HologramNode(var_name);
 			}
 		}
 		else if (n.getLabel().compareTo(Disjunction.SYMBOL) == 0)
@@ -84,7 +84,7 @@ public class KeepIfUniquelyDetermines extends VariableBasedTruncation
 			{
 				for (HologramNode c : n.m_children)
 				{
-					HologramNode new_c = determines(c);
+					HologramNode new_c = determines(c, var_name);
 					if (new_c != null)
 					{
 						return new_c;
@@ -96,20 +96,20 @@ public class KeepIfUniquelyDetermines extends VariableBasedTruncation
 			{
 				for (HologramNode c : n.m_children)
 				{
-					HologramNode new_c = determines(c);
+					HologramNode new_c = determines(c, var_name);
 					if (new_c == null)
 					{
 						return null;
 					}
 				}
-				return new HologramNode(m_name);
+				return new HologramNode(var_name);
 			}
 		}
 		else if (n.getLabel().compareTo(Negation.SYMBOL) == 0)
 		{
-			return determines(n.m_children.get(0));
+			return determines(n.m_children.get(0), var_name);
 		}
-		else if (n.getLabel().compareTo(m_name) == 0)
+		else if (n.getLabel().compareTo(var_name) == 0)
 		{
 			return n;
 		}

@@ -35,6 +35,11 @@ public class HittingSetTestGenerationExperiment extends TestGenerationExperiment
 	public static final transient String NAME = "Hypergraph";
 	
 	/**
+	 * The name of parameter "Number of edges".
+	 */
+	public static final transient String NUM_EDGES = "Number of edges";
+	
+	/**
 	 * The truncations used to generate equivalence classes.
 	 */
 	protected transient Truncation[] m_truncations;
@@ -82,6 +87,8 @@ public class HittingSetTestGenerationExperiment extends TestGenerationExperiment
 		write(SIZE, 0);
 		write(TIME, 0);
 		Hypergraph h = HypergraphGenerator.getGraph(m_formula, m_truncations);
+		write(NUM_EDGES, h.getEdgeCount());
+		setProgression(0.5f);
 		int size = 0;
 		size = HittingSetRunner.runHittingSet(h).size();
 		long end = System.currentTimeMillis();

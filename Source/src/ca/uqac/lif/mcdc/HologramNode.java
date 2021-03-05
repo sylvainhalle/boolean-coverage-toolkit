@@ -213,11 +213,124 @@ public class HologramNode
 	}
 	
 	/**
+	 * Gets the Boolean value of the leaf with given label.
+	 * @param v The label
+	 * @return The Boolean value
+	 */
+	public Boolean getLeafValue(String v)
+	{
+		if (m_label.compareTo(v) == 0)
+		{
+			return m_value;
+		}
+		for (HologramNode child : m_children)
+		{
+			Boolean b = child.getLeafValue(v);
+			if (b != null)
+			{
+				return b;
+			}
+		}
+		return null;
+	}
+	
+	/**
 	 * Creates a new instance of dummy node.
 	 * @return The node
 	 */
 	public static HologramNode dummyNode()
 	{
 		return new HologramNode(HologramNode.DUMMY_SYMBOL, null);
+	}
+	
+	/**
+	 * Creates a tree from another one by negating the value of a variable
+	 * and percolating the changes.
+	 * @param n The root of the original tree
+	 * @param v The name of the variable
+	 * @return A new copy of the tree with the modifications
+	 */
+	public static HologramNode negate(HologramNode n, String v)
+	{
+		HologramNode new_n = new HologramNode(n.getLabel(), n.getValue());
+		String cur_label = n.getLabel();
+		if (cur_label.compareTo(v) == 0)
+		{
+			new_n.setValue(!n.getValue());
+		}
+		else if (cur_label.compareTo(Negation.SYMBOL) == 0)
+		{
+			HologramNode new_child = negate(n.m_children.get(0), v);
+			new_n.addChild(new_child);
+			if (new_child.getValue() == null)
+			{
+				new_n.setValue(null);
+			}
+			else
+			{
+				new_n.setValue(!new_child.getValue());
+			}
+		}
+		else if (cur_label.compareTo(Conjunction.SYMBOL) == 0)
+		{
+			boolean value = true;
+			for (HologramNode child : n.m_children)
+			{
+				HologramNode new_child = negate(child, v);
+				if (new_child.getValue() != null && new_child.getValue() == false)
+				{
+					value = false;
+				}
+				new_n.addChild(new_child);
+			}
+			new_n.setValue(value);
+		}
+		else if (cur_label.compareTo(Disjunction.SYMBOL) == 0)
+		{
+			boolean value = false;
+			for (HologramNode child : n.m_children)
+			{
+				HologramNode new_child = negate(child, v);
+				if (new_child.getValue() != null && new_child.getValue() == true)
+				{
+					value = true;
+				}
+				new_n.addChild(new_child);
+			}
+			new_n.setValue(value);
+		}
+		return new_n;
+	}
+	
+	/**
+	 * Creates a tree made of a 
+	 * @param n
+	 * @param child_nb
+	 * @param v
+	 * @return
+	 */
+	public static HologramNode getLeafForOtherVariable(HologramNode n, int child_nb, String v)
+	{
+		if (n.getChildren().get(child_nb).hasLabel(v))
+		{
+			return HologramNode.dummyNode();
+		}
+		HologramNode new_n = new HologramNode(n.getLabel(), n.getValue());
+		for (int i = 0; i < n.getChildren().size(); i++)
+		{
+			if (i != child_nb)
+			{
+				new_n.addChild(HologramNode.dummyNode());
+			}
+			else
+			{
+				HologramNode child = n.getChildren().get(i);
+				HologramNode new_child = new HologramNode(child.getLabel(), child.getValue());
+				HologramNode new_under = new HologramNode(v, n.getLeafValue(v));
+				new_child.addChild(new_under);
+				new_n.addChild(new_child);
+			}
+		}
+		return new_n;
 	}
 }
