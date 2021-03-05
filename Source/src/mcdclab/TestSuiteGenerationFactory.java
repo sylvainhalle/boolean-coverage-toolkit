@@ -76,13 +76,31 @@ public class TestSuiteGenerationFactory extends FormulaBasedExperimentFactory<Te
 	public static final transient String C_MUMCUT = "MUMCUT";
 	
 	/**
+	 * A flag that determines if only hypergraph experiments are produced
+	 */
+	protected boolean m_onlyHypergraph = false;
+	
+	/**
+	 * Creates a new experiment factory.
+	 * @param lab The lab to which the experiments will be added
+	 * @param provider A provider for formulas
+	 * @param only_hypergraph Set to <tt>true</tt> to generate only
+	 * hypergraph experiments
+	 */
+	public TestSuiteGenerationFactory(MyLaboratory lab, OperatorProvider provider, boolean only_hypergraph)
+	{
+		super(lab, TestGenerationExperiment.class, provider);
+		m_onlyHypergraph = only_hypergraph;
+	}
+	
+	/**
 	 * Creates a new experiment factory.
 	 * @param lab The lab to which the experiments will be added
 	 * @param provider A provider for formulas 
 	 */
 	public TestSuiteGenerationFactory(MyLaboratory lab, OperatorProvider provider)
 	{
-		super(lab, TestGenerationExperiment.class, provider);
+		this(lab, provider, false);
 	}
 	
 	public static Set<Truncation> getTruncations(Operator formula, String criterion)
@@ -147,6 +165,10 @@ public class TestSuiteGenerationFactory extends FormulaBasedExperimentFactory<Te
 		if (method.compareTo(HittingSetTestGenerationExperiment.NAME) == 0)
 		{
 			return getHittingSetExperiment(op, formula_name, r.getString(CRITERION));
+		}
+		if (m_onlyHypergraph)
+		{
+			return null;
 		}
 		if (method.compareTo(RandomTestGenerationExperiment.NAME) == 0)
 		{

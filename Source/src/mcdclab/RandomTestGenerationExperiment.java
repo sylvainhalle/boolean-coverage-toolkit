@@ -46,7 +46,7 @@ public class RandomTestGenerationExperiment extends HittingSetTestGenerationExpe
 	/**
 	 * The number of times a test suite is randomly generated
 	 */
-	public static final transient int NUM_RERUNS = 10;
+	public static final transient int NUM_RERUNS = 5;
 	
 	public RandomTestGenerationExperiment(Operator formula, String formula_name, Set<Truncation> truncations) 
 	{

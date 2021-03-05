@@ -25,10 +25,10 @@ import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.LatexNamer;
 import ca.uqac.lif.labpal.Region;
 import ca.uqac.lif.labpal.table.ExperimentTable;
-import ca.uqac.lif.labpal.table.VersusTable;
 import ca.uqac.lif.mcdc.ObjectIdentifier;
 import ca.uqac.lif.mcdc.Operator;
 import ca.uqac.lif.mtnp.plot.TwoDimensionalPlot.Axis;
+import ca.uqac.lif.mtnp.plot.gnuplot.ClusteredHistogram;
 import ca.uqac.lif.mtnp.plot.gnuplot.Scatterplot;
 import ca.uqac.lif.mtnp.table.ExpandAsColumns;
 import ca.uqac.lif.mtnp.table.TransformedTable;
@@ -89,6 +89,9 @@ public class MyLaboratory extends Laboratory
 
 		/* Set to true to include experiments for criteria merging. */
 		boolean include_merging = false;
+		
+		/* Set to true to include only hypergraph experiments. */
+		boolean only_hypergraph = false;
 
 		/* If set to true, sets of experiments that are excluded from the lab
 		   will still create the instances of tables, plots and macros
@@ -139,6 +142,11 @@ public class MyLaboratory extends Laboratory
 				include_combinatorial = true;
 				include_random = true;
 			}
+			if (c_line.hasOption("only-hypergraph"))
+			{
+				only_hypergraph = true;
+				System.out.println("Including only hypergraph experiments");
+			}
 		}
 
 		// Basic stats about all formulas in the benchmark
@@ -151,6 +159,7 @@ public class MyLaboratory extends Laboratory
 		// Global tables, macros and plots
 		add(new LabStats(this));
 		add(new NumRerunsMacro(this));
+		add(new HypergraphStats(this));
 		HittingSetExperimentTable t_gen_solving = new HittingSetExperimentTable(TIME_GENERATION, TIME_SOLVING);
 		t_gen_solving.setTitle("Generation vs. solving time for hypergraph experiments");
 		t_gen_solving.setNickname("tGenVsSolvingHypergraph");
@@ -163,6 +172,14 @@ public class MyLaboratory extends Laboratory
 			plot.setCaption(Axis.Y, "Solving time (ms)");
 			plot.setLogscale(Axis.X).setLogscale(Axis.Y);
 			plot.setTitle(t_gen_solving.getTitle());
+			add(plot);
+		}
+		HypergraphMultiBinDistribution t_hypergraph_size_distro = new HypergraphMultiBinDistribution(false, 0, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000);
+		t_hypergraph_size_distro.setTitle("Hypergraph size distribution");
+		t_hypergraph_size_distro.setNickname("tHypergraphSizeDistro");
+		add(t_hypergraph_size_distro);
+		{
+			ClusteredHistogram plot = new ClusteredHistogram(t_hypergraph_size_distro);
 			add(plot);
 		}
 
@@ -189,7 +206,7 @@ public class MyLaboratory extends Laboratory
 			big_r.add(FORMULA, op_provider.getNames());
 
 			// The factory to generate experiments
-			TestSuiteGenerationFactory factory = new TestSuiteGenerationFactory(this, op_provider);
+			TestSuiteGenerationFactory factory = new TestSuiteGenerationFactory(this, op_provider, only_hypergraph);
 
 			for (Region f_r : big_r.all(METHOD, CRITERION, FORMULA))
 			{
@@ -200,6 +217,7 @@ public class MyLaboratory extends Laboratory
 				}
 				g.add(e);
 				t_gen_solving.add(e);
+				t_hypergraph_size_distro.add(e);
 				et_coverage_random.add(e);
 			}
 		}
@@ -225,7 +243,7 @@ public class MyLaboratory extends Laboratory
 			big_r.add(FORMULA, op_provider.getNames());
 
 			// The factory to generate experiments
-			TestSuiteGenerationFactory factory = new TestSuiteGenerationFactory(this, op_provider);
+			TestSuiteGenerationFactory factory = new TestSuiteGenerationFactory(this, op_provider, only_hypergraph);
 
 			for (Region c_r : big_r.all(CRITERION))
 			{
@@ -269,6 +287,7 @@ public class MyLaboratory extends Laboratory
 					}
 					g.add(e);
 					t_gen_solving.add(e);
+					t_hypergraph_size_distro.add(e);
 					et_time.add(e);
 					et_size.add(e);
 					et_size_vs_time.add(e);
@@ -308,7 +327,7 @@ public class MyLaboratory extends Laboratory
 			ObjectIdentifier<ToolTriplet> identifier = new ObjectIdentifier<ToolTriplet>();
 
 			// The factory to generate experiments
-			TestSuiteGenerationFactory factory = new TestSuiteGenerationFactory(this, op_provider);
+			TestSuiteGenerationFactory factory = new TestSuiteGenerationFactory(this, op_provider, only_hypergraph);
 
 			for (Region c_r : big_r.all(CRITERION))
 			{
@@ -353,6 +372,7 @@ public class MyLaboratory extends Laboratory
 					}
 					g.add(e);
 					t_gen_solving.add(e);
+					t_hypergraph_size_distro.add(e);
 					et_time.add(e);
 					et_size.add(e);
 					et_size_vs_time.add(e);
@@ -388,7 +408,7 @@ public class MyLaboratory extends Laboratory
 			Scanner scanner = new Scanner(FileHelper.internalFileToStream(MyLaboratory.class, "/mcdclab/results/chen1999.csv"));
 			Apsec99TestGenerationExperiment.addToLab(this, scanner, op_provider);
 			// The factory to generate experiments
-			TestSuiteGenerationFactory factory = new TestSuiteGenerationFactory(this, op_provider);
+			TestSuiteGenerationFactory factory = new TestSuiteGenerationFactory(this, op_provider, only_hypergraph);
 			for (Region c_r : big_r.all(CRITERION))
 			{
 				String criterion = c_r.getString(CRITERION);
@@ -422,6 +442,7 @@ public class MyLaboratory extends Laboratory
 					}
 					g.add(e);
 					t_gen_solving.add(e);
+					t_hypergraph_size_distro.add(e);
 					et_size.add(e);
 					//et_coverage_random.add(e);
 				}
@@ -582,6 +603,7 @@ public class MyLaboratory extends Laboratory
 		parser.addArgument(new Argument().withLongName("random").withDescription("Run random experiments"));
 		parser.addArgument(new Argument().withLongName("tway").withDescription("Run combinatorial experiments"));
 		parser.addArgument(new Argument().withLongName("merging").withDescription("Run criterion merging experiments"));
+		parser.addArgument(new Argument().withLongName("only-hypergraph").withDescription("Run only hypergraph experiments"));
 	}
 	
 	@Override
