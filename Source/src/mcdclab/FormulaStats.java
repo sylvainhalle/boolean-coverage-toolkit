@@ -29,8 +29,16 @@ import ca.uqac.lif.labpal.macro.MacroMap;
  */
 public class FormulaStats extends MacroMap
 {
+	/**
+	 * A provider that contains all the lab's formulas.
+	 */
 	protected OperatorProvider m_provider;
 	
+	/**
+	 * Creates a new instance of the macro.
+	 * @param lab The lab to which this macro is associated
+	 * @param provider A provider that contains all the lab's formulas
+	 */
 	public FormulaStats(Laboratory lab, OperatorProvider provider)
 	{
 		super(lab);

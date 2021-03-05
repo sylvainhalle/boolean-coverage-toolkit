@@ -29,6 +29,10 @@ import ca.uqac.lif.labpal.FileHelper;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.macro.MacroMap;
 
+/**
+ * Computes various static parameters about the environment in which the
+ * lab is executed.
+ */
 public class LabStats extends MacroMap
 {
 	protected transient JsonMap m_fileContents;

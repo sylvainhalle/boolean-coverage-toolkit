@@ -48,6 +48,7 @@ public abstract class FormulaBasedExperiment extends Experiment
 	 * Creates a new experiment.
 	 * @param formula The formula to generate coverage for
 	 * @param formula_name A name given to the formula
+	 * @param status The running status to give this experiment at creation time
 	 */
 	public FormulaBasedExperiment(Operator formula, String formula_name, Status status)
 	{
@@ -69,15 +70,7 @@ public abstract class FormulaBasedExperiment extends Experiment
 	 */
 	public FormulaBasedExperiment(Operator formula, String formula_name)
 	{
-		super();
-		describe(FORMULA, "The formula to generate coverage for");
-		describe(FORMULA_SIZE, "The size of the formula to generate coverage for");
-		describe(NUM_VARS, "The number of variables in the formula");
-		setInput(FORMULA, formula_name);
-		setInput(FORMULA_SIZE, formula.getSize());
-		setInput(NUM_VARS, formula.getVariables().size());
-		setDescription(formula.toString());
-		m_formula = formula;
+		this(formula, formula_name, Status.PREREQ_OK);
 	}
 	
 	@Override

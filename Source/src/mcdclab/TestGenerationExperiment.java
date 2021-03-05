@@ -51,26 +51,27 @@ public abstract class TestGenerationExperiment extends FormulaBasedExperiment
 	public static final transient String COVERAGE = "Coverage";
 	
 	/**
-	 * Creates a new experiment.
-	 * @param formula The formula to generate coverage for
-	 * @param formula_name A name given to the formula
+	 * Name of parameter "Exhaustive size".
 	 */
-	public TestGenerationExperiment(Operator formula, String formula_name)
-	{
-		super(formula, formula_name);
-		describe(METHOD, "The method used to generate test suites");
-		describe(CRITERION, "The method used to generate test suites");
-		describe(SIZE, "The size of the generated test suite");
-		describe(TIME, "The time (in ms) taken to generate the test suite");
-		describe(COVERAGE, "The coverage achieved by the generated test suite");
-	}
+	public static final transient String SIZE_EXHAUSTIVE = "Exhaustive size"; 
 	
 	/**
 	 * Creates a new experiment.
 	 * @param formula The formula to generate coverage for
 	 * @param formula_name A name given to the formula
 	 */
-	public TestGenerationExperiment(Operator formula, String formula_name, Status status)
+	public TestGenerationExperiment(Operator formula, String formula_name)
+	{
+		this(formula, formula_name, Status.PREREQ_OK);
+	}
+	
+	/**
+	 * Creates a new experiment.
+	 * @param formula The formula to generate coverage for
+	 * @param formula_name A name given to the formula
+	 * @param status The running status to give this experiment at creation time
+	 */
+	protected TestGenerationExperiment(Operator formula, String formula_name, Status status)
 	{
 		super(formula, formula_name, status);
 		describe(METHOD, "The method used to generate test suites");
@@ -78,5 +79,7 @@ public abstract class TestGenerationExperiment extends FormulaBasedExperiment
 		describe(SIZE, "The size of the generated test suite");
 		describe(TIME, "The time (in ms) taken to generate the test suite");
 		describe(COVERAGE, "The coverage achieved by the generated test suite");
+		describe(SIZE_EXHAUSTIVE, "The size that an exhaustive test suite would have for the same formula");
+		write(SIZE_EXHAUSTIVE, Math.pow(2, formula.getVariables().size()));
 	}	
 }

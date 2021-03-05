@@ -34,6 +34,7 @@ import ca.uqac.lif.mcdc.Negation;
 import ca.uqac.lif.mcdc.Operator;
 import ca.uqac.lif.mcdc.Truncation;
 import ca.uqac.lif.mcdc.Valuation;
+import ca.uqac.lif.mtnp.util.FileHelper;
 
 /**
  * Generates test suites for MC/DC coverage by calling the external tool
@@ -62,6 +63,12 @@ public class MCDCTestGenerationExperiment extends HittingSetTestGenerationExperi
 	 */
 	protected static final transient Pattern s_valuePattern = Pattern.compile("(.)=(\\d)");
 	
+	/**
+	 * A flag that checks if the tool used to generate test suites is present at
+	 * the expected location
+	 */
+	protected static boolean s_toolPresent = checkTool();
+	
 	public MCDCTestGenerationExperiment(Operator formula, String formula_name, Set<Truncation> truncations)
 	{
 		super(formula, formula_name, truncations);
@@ -78,6 +85,11 @@ public class MCDCTestGenerationExperiment extends HittingSetTestGenerationExperi
 	@Override
 	public void execute() throws ExperimentException, InterruptedException 
 	{
+		if (!s_toolPresent)
+		{
+			// External tool not present; fail
+			throw new ExperimentException("External tool could not be executed");
+		}
 		CommandRunner runner = new CommandRunner(new String[] {s_appName, "-umdnf", "-s", getExpression(m_formula)});
 		long start = System.currentTimeMillis();
 		runner.run();
@@ -180,5 +192,28 @@ public class MCDCTestGenerationExperiment extends HittingSetTestGenerationExperi
 			ps.print(")");
 		}
 	}
-
+	
+	/**
+	 * Looks for the presence of the external tool.
+	 * @return <tt>true</tt> if the tool has been found, <tt>false</tt>
+	 * otherwise
+	 */
+	protected static boolean checkTool()
+	{
+		return FileHelper.fileExists(s_appName);
+	}
+	
+	/**
+	 * Produces an error message if the external tool on which this experiment
+	 * relies cannot be found.
+	 * @return The error message, or <tt>null</tt> if the tool is present
+	 */
+	public static String isEnvironmentOk()
+	{
+		if (s_toolPresent)
+		{
+			return null; // OK
+		}
+		return "The executable " + s_appName + " is not found in the system. Experiments using this tool will not work.";
+	}
 }

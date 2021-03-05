@@ -26,6 +26,10 @@ import ca.uqac.lif.labpal.macro.MacroMap;
 import ca.uqac.lif.mtnp.table.TableEntry;
 import ca.uqac.lif.mtnp.table.TempTable;
 
+/**
+ * Computes the minimum and maximum ratio in the second column of a
+ * {@link CoverageTable}, and exports these values as two macros.
+ */
 public class MinMaxCoverage extends MacroMap
 {
 	/**

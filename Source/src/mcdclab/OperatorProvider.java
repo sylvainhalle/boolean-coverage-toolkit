@@ -20,7 +20,6 @@ package mcdclab;
 import java.util.HashMap;
 import java.util.Map;
 
-import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.mcdc.Operator;
 
 /**

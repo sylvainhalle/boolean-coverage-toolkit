@@ -40,6 +40,16 @@ public class HittingSetTestGenerationExperiment extends TestGenerationExperiment
 	public static final transient String NUM_EDGES = "Number of edges";
 	
 	/**
+	 * The name of parameter "Generation time".
+	 */
+	public static final transient String TIME_GENERATION = "Generation time";
+	
+	/**
+	 * The name of parameter "Solving time".
+	 */
+	public static final transient String TIME_SOLVING = "Solving time";
+	
+	/**
 	 * The truncations used to generate equivalence classes.
 	 */
 	protected transient Truncation[] m_truncations;
@@ -58,6 +68,8 @@ public class HittingSetTestGenerationExperiment extends TestGenerationExperiment
 	public HittingSetTestGenerationExperiment(Operator formula, String formula_name, Truncation ... truncations)
 	{
 		super(formula, formula_name);
+		describe(TIME_GENERATION, "The time (in ms) required to generate the hypergraph");
+		describe(TIME_SOLVING, "The time (in ms) required to find ahypergraph vertex covering");
 		setInput(METHOD, NAME);
 		m_truncations = truncations;
 	}
@@ -87,6 +99,7 @@ public class HittingSetTestGenerationExperiment extends TestGenerationExperiment
 		write(SIZE, 0);
 		write(TIME, 0);
 		Hypergraph h = HypergraphGenerator.getGraph(m_formula, m_truncations);
+		long end_generation = System.currentTimeMillis();
 		write(NUM_EDGES, h.getEdgeCount());
 		setProgression(0.5f);
 		int size = 0;
@@ -94,6 +107,8 @@ public class HittingSetTestGenerationExperiment extends TestGenerationExperiment
 		long end = System.currentTimeMillis();
 		write(SIZE, size);
 		write(TIME, end - start);
+		write(TIME_GENERATION, end_generation - start);
+		write(TIME_SOLVING, end - end_generation);
 		write(COVERAGE, 1);
 	}
 	

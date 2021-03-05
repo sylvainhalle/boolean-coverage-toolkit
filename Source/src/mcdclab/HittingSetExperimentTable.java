@@ -17,28 +17,27 @@
  */
 package mcdclab;
 
-import ca.uqac.lif.json.JsonNumber;
-import ca.uqac.lif.labpal.Laboratory;
-import ca.uqac.lif.labpal.macro.MacroScalar;
+import ca.uqac.lif.labpal.Experiment;
+import ca.uqac.lif.labpal.table.ExperimentTable;
 
 /**
- * Macro that tracks the number of times the random generation algorithm
- * is re-run.
+ * An {@link ExperimentTable} that only accepts
+ * {@link HittingSetTestGenerationExperiment}s.
  */
-public class NumRerunsMacro extends MacroScalar
+public class HittingSetExperimentTable extends ExperimentTable
 {
-	/**
-	 * Creates a new instance of the macro.
-	 * @param lab The lab from which to fetch the values
-	 */
-	public NumRerunsMacro(Laboratory lab) 
+	public HittingSetExperimentTable(String ... params)
 	{
-		super(lab, "numreruns", "The number of times the random generation algorithm is re-run");
+		super(params);
 	}
-
+	
 	@Override
-	public JsonNumber getValue()
+	public ExperimentTable add(Experiment e)
 	{
-		return new JsonNumber(RandomTestGenerationExperiment.NUM_RERUNS);
+		if (e instanceof HittingSetTestGenerationExperiment)
+		{
+			return super.add(e);
+		}
+		return this;
 	}
 }

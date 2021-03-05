@@ -17,12 +17,18 @@
  */
 package mcdclab;
 
+import ca.uqac.lif.labpal.CliParser;
+import ca.uqac.lif.labpal.CliParser.Argument;
+import ca.uqac.lif.labpal.CliParser.ArgumentMap;
 import ca.uqac.lif.labpal.Group;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.LatexNamer;
 import ca.uqac.lif.labpal.Region;
 import ca.uqac.lif.labpal.table.ExperimentTable;
+import ca.uqac.lif.labpal.table.VersusTable;
 import ca.uqac.lif.mcdc.ObjectIdentifier;
+import ca.uqac.lif.mcdc.Operator;
+import ca.uqac.lif.mtnp.plot.TwoDimensionalPlot.Axis;
 import ca.uqac.lif.mtnp.plot.gnuplot.Scatterplot;
 import ca.uqac.lif.mtnp.table.ExpandAsColumns;
 import ca.uqac.lif.mtnp.table.TransformedTable;
@@ -44,6 +50,8 @@ import static mcdclab.CriterionFusionExperiment.TIME_MERGED;
 import static mcdclab.FormulaBasedExperiment.FORMULA;
 import static mcdclab.FormulaBasedExperiment.FORMULA_SIZE;
 import static mcdclab.FormulaBasedExperiment.NUM_VARS;
+import static mcdclab.HittingSetTestGenerationExperiment.TIME_GENERATION;
+import static mcdclab.HittingSetTestGenerationExperiment.TIME_SOLVING;
 import static mcdclab.TestGenerationExperiment.COVERAGE;
 import static mcdclab.TestGenerationExperiment.CRITERION;
 import static mcdclab.TestGenerationExperiment.METHOD;
@@ -62,11 +70,25 @@ public class MyLaboratory extends Laboratory
 		setAuthor("Sylvain Hallé");
 		setTitle("Boolean condition coverage with evaluation trees");
 
+		/* By setting this parameter to true, only "small" problem instances
+		   will be added to the lab (fewer variables, etc.). This is used to
+		   debug and test the lab and should be put to false for the final run. */
+		boolean small = false;
+
+		/* Set to true to include experiments with random test suites. */
 		boolean include_random = false;
-		boolean include_safecomp = false;
-		boolean include_comparison = false;
-		boolean include_acts = false;
-		boolean include_mumcut = true;
+
+		/* Set to true to include experiments for MC/DC coverage. */
+		boolean include_mcdc = false;
+
+		/* Set to true to include experiments for combinatorial coverage. */
+		boolean include_combinatorial = false;
+
+		/* Set to true to include experiments for MUMCUT coverage. */
+		boolean include_mumcut = false;
+
+		/* Set to true to include experiments for criteria merging. */
+		boolean include_merging = false;
 
 		/* If set to true, sets of experiments that are excluded from the lab
 		   will still create the instances of tables, plots and macros
@@ -76,19 +98,82 @@ public class MyLaboratory extends Laboratory
 		   errors) when running the lab on a subset of all experiments. */
 		boolean placeholders = true;
 
+		// Read command line arguments
+		{
+			ArgumentMap c_line = getCliArguments();
+			boolean specific = false;
+			if (c_line.hasOption("small"))
+			{
+				small = true;
+			}
+			if (c_line.hasOption("mcdc"))
+			{
+				specific = true;
+				include_mcdc = true;
+			}
+			if (c_line.hasOption("mumcut"))
+			{
+				specific = true;
+				include_mumcut = true;
+			}
+			if (c_line.hasOption("merging"))
+			{
+				specific = true;
+				include_merging = true;
+			}
+			if (c_line.hasOption("tway"))
+			{
+				specific = true;
+				include_combinatorial = true;
+			}
+			if (c_line.hasOption("random"))
+			{
+				specific = true;
+				include_random = true;
+			}
+			if (!specific)
+			{
+				include_mcdc = true;
+				include_mumcut = true;
+				include_merging = false;
+				include_combinatorial = true;
+				include_random = true;
+			}
+		}
+
 		// Basic stats about all formulas in the benchmark
 		{
 			OperatorProvider oprov = new OperatorProvider();
-			addFormulas(oprov);
+			addFormulas(oprov, small);
 			add(new FormulaStats(this, oprov));
+		}
+		
+		// Global tables, macros and plots
+		add(new LabStats(this));
+		add(new NumRerunsMacro(this));
+		HittingSetExperimentTable t_gen_solving = new HittingSetExperimentTable(TIME_GENERATION, TIME_SOLVING);
+		t_gen_solving.setTitle("Generation vs. solving time for hypergraph experiments");
+		t_gen_solving.setNickname("tGenVsSolvingHypergraph");
+		add(t_gen_solving);
+		{
+			Scatterplot plot = new Scatterplot(t_gen_solving);
+			plot.setNickname("pGenVsSolvingHypergraph");
+			plot.withLines(false);
+			plot.setCaption(Axis.X, "Generation time (ms)");
+			plot.setCaption(Axis.Y, "Solving time (ms)");
+			plot.setLogscale(Axis.X).setLogscale(Axis.Y);
+			plot.setTitle(t_gen_solving.getTitle());
+			add(plot);
 		}
 
 		// Coverage for the random technique on all formulas
 		if (placeholders || include_random)
 		{
 			Group g = new Group("Random test suite generation experiments");
-			add(g);
-
+			if (include_random)
+			{
+				add(g);
+			}
 			CoverageTable et_coverage_random = new CoverageTable(CRITERION, COVERAGE);
 			et_coverage_random.setTitle("Coverage of the random technique on all formulas");
 			et_coverage_random.setNickname("tRandomCoverage");
@@ -98,9 +183,9 @@ public class MyLaboratory extends Laboratory
 
 			Region big_r = new Region();
 			big_r.add(METHOD, RandomTestGenerationExperiment.NAME);
-			big_r.add(CRITERION, TestSuiteGenerationFactory.C_CLAUSE, TestSuiteGenerationFactory.C_PREDICATE, TestSuiteGenerationFactory.C_MCDC, TestSuiteGenerationFactory.C_2WAY, TestSuiteGenerationFactory.C_3WAY);
+			big_r.add(CRITERION, TestSuiteGenerationFactory.C_CLAUSE, TestSuiteGenerationFactory.C_PREDICATE, TestSuiteGenerationFactory.C_MCDC, TestSuiteGenerationFactory.C_2WAY, TestSuiteGenerationFactory.C_3WAY, TestSuiteGenerationFactory.C_MUMCUT);
 			OperatorProvider op_provider = new OperatorProvider();
-			addFormulas(op_provider);
+			addFormulas(op_provider, small);
 			big_r.add(FORMULA, op_provider.getNames());
 
 			// The factory to generate experiments
@@ -114,16 +199,19 @@ public class MyLaboratory extends Laboratory
 					continue;
 				}
 				g.add(e);
+				t_gen_solving.add(e);
 				et_coverage_random.add(e);
 			}
 		}
 
 		// Comparisons for MC/DC
-		if (placeholders || include_safecomp)
+		if (placeholders || include_mcdc)
 		{
 			Group g = new Group("Test suite generation experiments (MC/DC coverage)");
-			add(g);
-
+			if (include_mcdc)
+			{
+				add(g);
+			}
 			RatioMacro rm_size = new RatioMacro(this, "sizeRatioMCDC", SIZE, FORMULA, "Ratio between test suite size of hypergraph vs MCDC");
 			RatioMacro rm_time = new RatioMacro(this, "timeRatioMCDC", TIME, FORMULA, "Ratio between test suite time of hypergraph vs MCDC");
 			add(rm_size, rm_time);
@@ -133,7 +221,7 @@ public class MyLaboratory extends Laboratory
 			big_r.add(METHOD, HittingSetTestGenerationExperiment.NAME, MCDCTestGenerationExperiment.NAME);
 			big_r.add(CRITERION, TestSuiteGenerationFactory.C_MCDC);
 			OperatorProvider op_provider = new OperatorProvider();
-			addFormulas(op_provider);
+			addFormulas(op_provider, small);
 			big_r.add(FORMULA, op_provider.getNames());
 
 			// The factory to generate experiments
@@ -164,7 +252,7 @@ public class MyLaboratory extends Laboratory
 				tt_f_size_vs_time.setNickname(LatexNamer.latexify("ttFormulaSizeVsSize" + criterion));
 				for (Region f_r : c_r.all(FORMULA, METHOD))
 				{
-					TestGenerationExperiment e = factory.get(f_r, include_safecomp);
+					TestGenerationExperiment e = factory.get(f_r, include_mcdc);
 					if (e == null)
 					{
 						continue;
@@ -180,6 +268,7 @@ public class MyLaboratory extends Laboratory
 						rm_time.addToSecondSet(e);
 					}
 					g.add(e);
+					t_gen_solving.add(e);
 					et_time.add(e);
 					et_size.add(e);
 					et_size_vs_time.add(e);
@@ -196,12 +285,14 @@ public class MyLaboratory extends Laboratory
 		}
 
 		// Comparison with ACTS on t-way
-		if (placeholders || include_acts)
+		if (placeholders || include_combinatorial)
 		{
 			// The factory to generate experiments
 			Group g = new Group("Test suite generation experiments (combinatorial coverage)");
-			add(g);
-
+			if (include_combinatorial)
+			{
+				add(g);
+			}
 			RatioMacro rm_size = new RatioMacro(this, "sizeRatioACTS", SIZE, FORMULA, "Ratio between test suite size of hypergraph vs ACTS");
 			RatioMacro rm_time = new RatioMacro(this, "timeRatioACTS", TIME, FORMULA, "Ratio between test suite time of hypergraph vs ACTS");
 			add(rm_size, rm_time);
@@ -211,7 +302,7 @@ public class MyLaboratory extends Laboratory
 			big_r.add(METHOD, HittingSetTestGenerationExperiment.NAME, ActsTestGenerationExperiment.NAME, RandomTestGenerationExperiment.NAME);
 			big_r.add(CRITERION, TestSuiteGenerationFactory.C_2WAY, TestSuiteGenerationFactory.C_3WAY);
 			OperatorProvider op_provider = new OperatorProvider();
-			addFormulas(op_provider);
+			addFormulas(op_provider, small);
 			big_r.add(FORMULA, op_provider.getNames());
 
 			ObjectIdentifier<ToolTriplet> identifier = new ObjectIdentifier<ToolTriplet>();
@@ -245,7 +336,7 @@ public class MyLaboratory extends Laboratory
 					{
 						continue;
 					}
-					TestGenerationExperiment e = factory.get(f_r, include_acts);
+					TestGenerationExperiment e = factory.get(f_r, include_combinatorial);
 					if (e == null)
 					{
 						continue;
@@ -261,6 +352,7 @@ public class MyLaboratory extends Laboratory
 						rm_time.addToSecondSet(e);
 					}
 					g.add(e);
+					t_gen_solving.add(e);
 					et_time.add(e);
 					et_size.add(e);
 					et_size_vs_time.add(e);
@@ -277,14 +369,21 @@ public class MyLaboratory extends Laboratory
 		if (placeholders || include_mumcut)
 		{
 			Group g = new Group("Test suite generation experiments (MUMCUT coverage)");
-			add(g);
+			if (include_mumcut)
+			{
+				add(g);
+			}
+			RatioMacro rm_size = new RatioMacro(this, "sizeRatioMUMCUT", SIZE, FORMULA, "Ratio between test suite size of hypergraph vs MUMCUT");
+			ExhaustivePercentageMacro epm_chen = new ExhaustivePercentageMacro(this, "epMUMCUTChen", "Chen");
+			ExhaustivePercentageMacro epm_hypergraph = new ExhaustivePercentageMacro(this, "epMUMCUTHypergraph", "Hypergraph");
+			add(rm_size, epm_chen, epm_hypergraph);
 
 			// A big region encompassing all the lab's parameters
 			Region big_r = new Region();
 			big_r.add(METHOD, HittingSetTestGenerationExperiment.NAME, Apsec99TestGenerationExperiment.NAME);
 			big_r.add(CRITERION, TestSuiteGenerationFactory.C_MUMCUT);
 			OperatorProvider op_provider = new OperatorProvider();
-			addFormulas(op_provider);
+			addFormulas(op_provider, small);
 			big_r.add(FORMULA, op_provider.getNames());
 			Scanner scanner = new Scanner(FileHelper.internalFileToStream(MyLaboratory.class, "/mcdclab/results/chen1999.csv"));
 			Apsec99TestGenerationExperiment.addToLab(this, scanner, op_provider);
@@ -311,7 +410,18 @@ public class MyLaboratory extends Laboratory
 					{
 						continue;
 					}
+					if (f_r.getString(METHOD).compareTo(HittingSetTestGenerationExperiment.NAME) == 0)
+					{
+						rm_size.addToFirstSet(e);
+						epm_hypergraph.add(e);
+					}
+					if (f_r.getString(METHOD).compareTo(Apsec99TestGenerationExperiment.NAME) == 0)
+					{
+						rm_size.addToSecondSet(e);
+						epm_chen.add(e);
+					}
 					g.add(e);
+					t_gen_solving.add(e);
 					et_size.add(e);
 					//et_coverage_random.add(e);
 				}
@@ -319,11 +429,13 @@ public class MyLaboratory extends Laboratory
 		}
 
 		// Comparison merged vs. global
-		if (placeholders || include_comparison)
+		if (placeholders || include_merging)
 		{
 			Group g = new Group("Merged vs. global test suite generation");
-			add(g);
-
+			if (include_merging)
+			{
+				add(g);
+			}
 			// A big region encompassing all the lab's parameters
 			Region big_r = new Region();
 			big_r.add(CRITERIA, 
@@ -331,7 +443,7 @@ public class MyLaboratory extends Laboratory
 					CriterionFusionExperimentFactory.C_MCDC_2WAY,
 					CriterionFusionExperimentFactory.C_CLAUSE_2WAY);
 			OperatorProvider op_provider = new OperatorProvider();
-			addFormulas(op_provider);
+			addFormulas(op_provider, small);
 			big_r.add(FORMULA, op_provider.getNames());
 
 			// The factory to generate experiments
@@ -356,7 +468,7 @@ public class MyLaboratory extends Laboratory
 				add(et_size, et_time);
 				for (Region f_r : c_r.all(FORMULA))
 				{
-					CriterionFusionExperiment cfe = factory.get(f_r, include_comparison);
+					CriterionFusionExperiment cfe = factory.get(f_r, include_merging);
 					if (cfe == null)
 					{
 						continue;
@@ -379,19 +491,29 @@ public class MyLaboratory extends Laboratory
 				add(p_time);
 			}
 		}
-
-		// Lab stats
-		add(new LabStats(this));
-		add(new NumRerunsMacro(this));
 	}
 
-	protected static void addFormulas(OperatorProvider provider)
+	protected static void addFormulas(OperatorProvider provider, boolean small)
 	{
-		int num_formulas = 10; // Normally 20, set to a smaller number for tests
-		DnfOperatorPicker picker = new DnfOperatorPicker(new RandomInteger(2,14), new RandomInteger(2,20), new RandomFloat(), new RandomBoolean());
-		for (int i = 1; i <= num_formulas; i++)
+		int num_formulas = 20;
+		DnfOperatorPicker picker = null;
+		if (small)
 		{
-			provider.add("TCAS " + i, TCASBenchmarkDNF.getFormula(i));
+			num_formulas = 10;
+			// Smaller random formulas
+			picker = new DnfOperatorPicker(new RandomInteger(2,10), new RandomInteger(2,15), new RandomFloat(), new RandomBoolean());
+		}
+		else
+		{
+			picker = new DnfOperatorPicker(new RandomInteger(2,14), new RandomInteger(2,20), new RandomFloat(), new RandomBoolean());
+		}
+		for (int i = 1; i <= 20; i++) // All TCAS
+		{
+			Operator op = TCASBenchmarkDNF.getFormula(i);
+			if (op != null && (!small || op.getVariables().size() < 10))
+			{
+				provider.add("TCAS " + i, op);
+			}
 		}
 		for (int i = 1; i < num_formulas; i++)
 		{
@@ -449,6 +571,23 @@ public class MyLaboratory extends Laboratory
 			set.add(n);
 		}
 		return b;
+	}
+
+	@Override
+	public void setupCli(CliParser parser)
+	{
+		parser.addArgument(new Argument().withLongName("small").withDescription("Run on small instances only"));
+		parser.addArgument(new Argument().withLongName("mumcut").withDescription("Run MUMCUT experiments"));
+		parser.addArgument(new Argument().withLongName("mcdc").withDescription("Run MC/DC experiments"));
+		parser.addArgument(new Argument().withLongName("random").withDescription("Run random experiments"));
+		parser.addArgument(new Argument().withLongName("tway").withDescription("Run combinatorial experiments"));
+		parser.addArgument(new Argument().withLongName("merging").withDescription("Run criterion merging experiments"));
+	}
+	
+	@Override
+	public String isEnvironmentOk()
+	{
+		return MCDCTestGenerationExperiment.isEnvironmentOk();
 	}
 
 	public static void main(String[] args)
