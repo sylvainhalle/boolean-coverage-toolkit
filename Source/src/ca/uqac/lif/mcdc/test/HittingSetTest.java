@@ -60,7 +60,8 @@ public class HittingSetTest
 	@Test
 	public void test3() throws IOException
 	{
-		Hypergraph h = HypergraphGenerator.getGraph(TCASBenchmark.getFormula(3),
+		TCASBenchmark benchmark = new TCASBenchmark();
+		Hypergraph h = HypergraphGenerator.getGraph(benchmark.getFormula(3),
 				new KeepIfDetermines("a"), new KeepIfDetermines("b"), new KeepIfDetermines("c"), 
 				new KeepIfDetermines("d"), new KeepIfDetermines("e"), new KeepIfDetermines("f"), 
 				new KeepIfDetermines("g"));

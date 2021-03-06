@@ -71,7 +71,8 @@ public class ConfusionMatrixTest
 	@Test
 	public void testMatrix1()
 	{
-		Operator op = TCASBenchmark.getFormula(5); //Or(And(a, b, c), And(Not(b), c), And(Not(a), Not(b)));
+		TCASBenchmark benchmark = new TCASBenchmark();
+		Operator op = benchmark.getFormula(5); //Or(And(a, b, c), And(Not(b), c), And(Not(a), Not(b)));
 		Set<Truncation> criterion1 = KeepValuesOf.generateTWay(2, op);
 		//Set<Truncation> criterion1 = toSet(new KeepValuesOf("a"), new KeepValuesOf("b"));
 		//Set<Truncation> criterion2 = toSet(new KeepValuesOf("a"));

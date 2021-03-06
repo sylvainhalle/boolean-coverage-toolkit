@@ -38,7 +38,8 @@ public class OperatorTest
 	@Test
 	public void testVariables1()
 	{
-		Operator op = TCASBenchmark.getFormula(18);
+		TCASBenchmark benchmark = new TCASBenchmark();
+		Operator op = benchmark.getFormula(18);
 		Set<String> vars = op.getVariables();
 		assertEquals(13, vars.size());
 	}

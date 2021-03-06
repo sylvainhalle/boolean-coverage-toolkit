@@ -89,7 +89,7 @@ public class MyLaboratory extends Laboratory
 
 		/* Set to true to include experiments for criteria merging. */
 		boolean include_merging = false;
-		
+
 		/* Set to true to include only hypergraph experiments. */
 		boolean only_hypergraph = false;
 
@@ -155,7 +155,7 @@ public class MyLaboratory extends Laboratory
 			addFormulas(oprov, small);
 			add(new FormulaStats(this, oprov));
 		}
-		
+
 		// Global tables, macros and plots
 		add(new LabStats(this));
 		add(new NumRerunsMacro(this));
@@ -517,28 +517,44 @@ public class MyLaboratory extends Laboratory
 	protected static void addFormulas(OperatorProvider provider, boolean small)
 	{
 		int num_formulas = 20;
-		DnfOperatorPicker picker = null;
-		if (small)
 		{
-			num_formulas = 10;
-			// Smaller random formulas
-			picker = new DnfOperatorPicker(new RandomInteger(2,10), new RandomInteger(2,15), new RandomFloat(), new RandomBoolean());
-		}
-		else
-		{
-			picker = new DnfOperatorPicker(new RandomInteger(2,14), new RandomInteger(2,20), new RandomFloat(), new RandomBoolean());
-		}
-		for (int i = 1; i <= 20; i++) // All TCAS
-		{
-			Operator op = TCASBenchmarkDNF.getFormula(i);
-			if (op != null && (!small || op.getVariables().size() < 10))
+			DnfOperatorPicker picker = null;
+			if (small)
 			{
-				provider.add("TCAS " + i, op);
+				num_formulas = 10;
+				// Smaller random formulas
+				picker = new DnfOperatorPicker(new RandomInteger(2,10), new RandomInteger(2,15), new RandomFloat(), new RandomBoolean());
+			}
+			else
+			{
+				picker = new DnfOperatorPicker(new RandomInteger(2,14), new RandomInteger(2,20), new RandomFloat(), new RandomBoolean());
+			}
+			for (int i = 1; i < num_formulas; i++)
+			{
+				provider.add("Random " + i, picker.pick());
 			}
 		}
-		for (int i = 1; i < num_formulas; i++)
 		{
-			provider.add("Random " + i, picker.pick());
+			TCASBenchmarkDNF benchmark = new TCASBenchmarkDNF();
+			for (int i = 1; i <= 20; i++) // All TCAS
+			{
+				Operator op = benchmark.getFormula(i);
+				if (op != null && (!small || op.getVariables().size() < 10))
+				{
+					provider.add("TCAS " + i, op);
+				}
+			}
+		}
+		{
+			FaaBenchmark benchmark = new FaaBenchmark();
+			for (int i = 1; i <= 20; i++) // All FAA
+			{
+				Operator op = benchmark.getFormula(i);
+				if (op != null && (!small || op.getVariables().size() < 10))
+				{
+					provider.add("FAA " + i, op);
+				}
+			}
 		}
 	}
 
@@ -605,7 +621,7 @@ public class MyLaboratory extends Laboratory
 		parser.addArgument(new Argument().withLongName("merging").withDescription("Run criterion merging experiments"));
 		parser.addArgument(new Argument().withLongName("only-hypergraph").withDescription("Run only hypergraph experiments"));
 	}
-	
+
 	@Override
 	public String isEnvironmentOk()
 	{

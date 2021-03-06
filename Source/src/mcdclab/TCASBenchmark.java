@@ -17,31 +17,16 @@
  */
 package mcdclab;
 
-import ca.uqac.lif.mcdc.Atom;
 import ca.uqac.lif.mcdc.Operator;
 
 import static ca.uqac.lif.mcdc.Conjunction.And;
 import static ca.uqac.lif.mcdc.Disjunction.Or;
 import static ca.uqac.lif.mcdc.Negation.Not;
 
-public class TCASBenchmark 
+public class TCASBenchmark extends FormulaBenchmark 
 {
-	protected static final Atom a = new Atom("a");
-	protected static final Atom b = new Atom("b");
-	protected static final Atom c = new Atom("c");
-	protected static final Atom d = new Atom("d");
-	protected static final Atom e = new Atom("e");
-	protected static final Atom f = new Atom("f");
-	protected static final Atom g = new Atom("g");
-	protected static final Atom h = new Atom("h");
-	protected static final Atom i = new Atom("i");
-	protected static final Atom j = new Atom("j");
-	protected static final Atom k = new Atom("k");
-	protected static final Atom l = new Atom("l");
-	protected static final Atom m = new Atom("m");
-	protected static final Atom n = new Atom("n");
-
-	public static Operator getFormula(int id)
+	@Override
+	public Operator getFormula(int id)
 	{
 		switch (id)
 		{
