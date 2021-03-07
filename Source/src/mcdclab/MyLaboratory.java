@@ -99,7 +99,7 @@ public class MyLaboratory extends Laboratory
 		   themselves are not added to the lab. This makes it possible to
 		   export artifacts normally (i.e. without creating LaTeX compilation
 		   errors) when running the lab on a subset of all experiments. */
-		boolean placeholders = true;
+		boolean placeholders = false;
 
 		// Read command line arguments
 		{

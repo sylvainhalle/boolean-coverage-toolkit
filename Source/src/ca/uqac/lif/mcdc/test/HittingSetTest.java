@@ -44,7 +44,8 @@ public class HittingSetTest
 	@Test
 	public void test1() throws IOException
 	{
-		Hypergraph h = HypergraphGenerator.getGraph(Or("a", "b"), KeepAll.instance);
+		HypergraphGenerator generator = new HypergraphGenerator();
+		Hypergraph h = generator.getGraph(Or("a", "b"), KeepAll.instance);
 		int n = HittingSetRunner.runHittingSet(h).size();
 		assertEquals(4, n);
 	}
@@ -52,7 +53,8 @@ public class HittingSetTest
 	@Test
 	public void test2() throws IOException
 	{
-		Hypergraph h = HypergraphGenerator.getGraph(Or(And("a", "b"), And("c", "d")), KeepClauses.instance);
+		HypergraphGenerator generator = new HypergraphGenerator();
+		Hypergraph h = generator.getGraph(Or(And("a", "b"), And("c", "d")), KeepClauses.instance);
 		int n = HittingSetRunner.runHittingSet(h).size();
 		assertEquals(4, n);
 	}
@@ -61,7 +63,8 @@ public class HittingSetTest
 	public void test3() throws IOException
 	{
 		TCASBenchmark benchmark = new TCASBenchmark();
-		Hypergraph h = HypergraphGenerator.getGraph(benchmark.getFormula(3),
+		HypergraphGenerator generator = new HypergraphGenerator();
+		Hypergraph h = generator.getGraph(benchmark.getFormula(3),
 				new KeepIfDetermines("a"), new KeepIfDetermines("b"), new KeepIfDetermines("c"), 
 				new KeepIfDetermines("d"), new KeepIfDetermines("e"), new KeepIfDetermines("f"), 
 				new KeepIfDetermines("g"));

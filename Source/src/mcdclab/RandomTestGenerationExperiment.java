@@ -21,12 +21,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import ca.uqac.lif.labpal.ExperimentException;
-import ca.uqac.lif.mcdc.CategoryCoverage;
-import ca.uqac.lif.mcdc.HittingSetRunner;
-import ca.uqac.lif.mcdc.Hypergraph;
-import ca.uqac.lif.mcdc.HypergraphGenerator;
-import ca.uqac.lif.mcdc.Operator;
-import ca.uqac.lif.mcdc.Truncation;
 import ca.uqac.lif.mcdc.Valuation;
 import ca.uqac.lif.synthia.random.RandomBoolean;
 
@@ -36,7 +30,7 @@ import ca.uqac.lif.synthia.random.RandomBoolean;
  * hypergraph technique and gets the number <i>n</i> of test cases. It then
  * randomly picks <i>n</i> test cases and measures coverage.
  */
-public class RandomTestGenerationExperiment extends HittingSetTestGenerationExperiment
+public class RandomTestGenerationExperiment extends DependentTestGenerationExperiment
 {
 	/**
 	 * The name of the test generation method.
@@ -48,15 +42,9 @@ public class RandomTestGenerationExperiment extends HittingSetTestGenerationExpe
 	 */
 	public static final transient int NUM_RERUNS = 5;
 	
-	public RandomTestGenerationExperiment(Operator formula, String formula_name, Set<Truncation> truncations) 
+	public RandomTestGenerationExperiment(HittingSetTestGenerationExperiment reference) 
 	{
-		super(formula, formula_name, truncations);
-		setInput(METHOD, NAME);
-	}
-	
-	public RandomTestGenerationExperiment(Operator formula, String formula_name, Truncation ... truncations) 
-	{
-		super(formula, formula_name, truncations);
+		super(reference);
 		setInput(METHOD, NAME);
 	}
 	
@@ -65,13 +53,15 @@ public class RandomTestGenerationExperiment extends HittingSetTestGenerationExpe
 	{
 		write(SIZE, 0);
 		write(TIME, 0);
-		Hypergraph h = HypergraphGenerator.getGraph(m_formula, m_truncations);
-		int target_size = 0;
-		target_size = HittingSetRunner.runHittingSet(h).size();
+		if (m_reference.getStatus() != Status.DONE)
+		{
+			m_reference.run();
+		}
+		setProgression(0.5f);
+		int target_size = m_reference.readInt(SIZE);
 		RandomBoolean bool = new RandomBoolean();
 		ValuationPicker picker = new ValuationPicker(bool, m_formula.getSortedVariables());
 		float best_coverage = 0;
-		CategoryCoverage cov = new CategoryCoverage(m_truncations);
 		long start = System.currentTimeMillis();
 		for (int run = 0; run < NUM_RERUNS; run++)
 		{
@@ -81,7 +71,7 @@ public class RandomTestGenerationExperiment extends HittingSetTestGenerationExpe
 			{
 				suite.add(picker.pick());
 			}
-			best_coverage = Math.max(best_coverage, cov.getCoverage(m_formula, suite));
+			best_coverage = Math.max(best_coverage, m_reference.getCoverage(suite));
 		}
 		long end = System.currentTimeMillis();
 		write(COVERAGE, best_coverage);

@@ -17,25 +17,20 @@
  */
 package mcdclab;
 
-import ca.uqac.lif.labpal.ExperimentException;
-import ca.uqac.lif.mcdc.Operator;
-
 /**
- * Experiment that replays pre-recorded results from an existing publication. 
+ * An experiment that uses the corresponding
+ * {@link HittingSetTestGenerationExperiment} as a reference to measure
+ * coverage ratio. Running thus experiment causes first the execution
+ * of that experiment. This avoids solving the same hitting set problem
+ * multiple times.
  */
-public class WriteInExperiment extends TestGenerationExperiment
+public abstract class DependentTestGenerationExperiment extends TestGenerationExperiment
 {
-	public WriteInExperiment(Operator op, String operator_name, float size, String method, String criterion)
+	protected transient HittingSetTestGenerationExperiment m_reference;
+	
+	public DependentTestGenerationExperiment(HittingSetTestGenerationExperiment reference)
 	{
-		super(op, operator_name, Status.DONE);
-		write(SIZE, size);
-		setInput(METHOD, method);
-		setInput(CRITERION, criterion);
-	}
-
-	@Override
-	public void execute() throws ExperimentException, InterruptedException
-	{
-		// Nothing to do
+		super(reference.m_formula, reference.readString(FORMULA));
+		m_reference = reference;
 	}
 }

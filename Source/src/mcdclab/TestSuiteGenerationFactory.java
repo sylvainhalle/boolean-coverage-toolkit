@@ -172,7 +172,9 @@ public class TestSuiteGenerationFactory extends FormulaBasedExperimentFactory<Te
 		}
 		if (method.compareTo(RandomTestGenerationExperiment.NAME) == 0)
 		{
-			return getRandomExperiment(op, formula_name, r.getString(CRITERION));
+			Region new_r = r.set(METHOD, HittingSetTestGenerationExperiment.NAME);
+			HittingSetTestGenerationExperiment reference = (HittingSetTestGenerationExperiment) get(new_r);
+			return getRandomExperiment(reference, op, formula_name, r.getString(CRITERION));
 		}
 		if (method.compareTo(ActsTestGenerationExperiment.NAME) == 0)
 		{
@@ -197,10 +199,9 @@ public class TestSuiteGenerationFactory extends FormulaBasedExperimentFactory<Te
 		return e;
 	}
 	
-	protected static RandomTestGenerationExperiment getRandomExperiment(Operator formula, String formula_name, String criterion)
+	protected static RandomTestGenerationExperiment getRandomExperiment(HittingSetTestGenerationExperiment reference, Operator formula, String formula_name, String criterion)
 	{
-		Set<Truncation> truncations = getTruncations(formula, criterion);
-		RandomTestGenerationExperiment e = new RandomTestGenerationExperiment(formula, formula_name, truncations);
+		RandomTestGenerationExperiment e = new RandomTestGenerationExperiment(reference);
 		e.setInput(CRITERION, criterion);
 		return e;
 	}

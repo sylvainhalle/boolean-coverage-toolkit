@@ -17,16 +17,30 @@
  */
 package mcdclab;
 
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import ca.uqac.lif.labpal.ExperimentException;
+import ca.uqac.lif.mcdc.CategoryCoverage;
 import ca.uqac.lif.mcdc.HittingSetRunner;
 import ca.uqac.lif.mcdc.HologramNode;
 import ca.uqac.lif.mcdc.Hypergraph;
 import ca.uqac.lif.mcdc.HypergraphGenerator;
 import ca.uqac.lif.mcdc.Operator;
 import ca.uqac.lif.mcdc.Truncation;
+import ca.uqac.lif.mcdc.Valuation;
+import clojure.lang.PersistentHashSet;
 
+/**
+ * Generates a test suite using tree transformations and the reduction to the
+ * hypergraph vertex covering problem. This experiment also has the property
+ * that, once it has executed, it can be asked to compute the coverage ratio
+ * of test suites produced by other experiments for the same criterion
+ * (with {@link #getCoverage(Set)}).
+ * 
+ * @see DependentTestGenerationExperiment
+ */
 public class HittingSetTestGenerationExperiment extends TestGenerationExperiment
 {
 	/**
@@ -54,6 +68,13 @@ public class HittingSetTestGenerationExperiment extends TestGenerationExperiment
 	 */
 	protected transient Truncation[] m_truncations;
 	
+	/**
+	 * The test suite produced as a result of running this experiment. Contrary
+	 * to other types of experiments, here the test suite is kept so that it can
+	 * be reused in eventual calls to {@link #getCoverage(Set)}.
+	 */
+	protected Set<Valuation> m_testSuite;
+	
 	static
 	{
 		warmUp();
@@ -72,6 +93,7 @@ public class HittingSetTestGenerationExperiment extends TestGenerationExperiment
 		describe(TIME_SOLVING, "The time (in ms) required to find ahypergraph vertex covering");
 		setInput(METHOD, NAME);
 		m_truncations = truncations;
+		m_testSuite = new HashSet<Valuation>();
 	}
 	
 	/**
@@ -90,6 +112,7 @@ public class HittingSetTestGenerationExperiment extends TestGenerationExperiment
 		{
 			m_truncations[i++] = t;
 		}
+		m_testSuite = new HashSet<Valuation>();
 	}
 
 	@Override
@@ -98,18 +121,41 @@ public class HittingSetTestGenerationExperiment extends TestGenerationExperiment
 		long start = System.currentTimeMillis();
 		write(SIZE, 0);
 		write(TIME, 0);
-		Hypergraph h = HypergraphGenerator.getGraph(m_formula, m_truncations);
+		HypergraphGenerator generator = new HypergraphGenerator();
+		Hypergraph h = generator.getGraph(m_formula, m_truncations);
 		long end_generation = System.currentTimeMillis();
 		write(NUM_EDGES, h.getEdgeCount());
 		setProgression(0.5f);
-		int size = 0;
-		size = HittingSetRunner.runHittingSet(h).size();
+		PersistentHashSet phs = HittingSetRunner.runHittingSet(h);
 		long end = System.currentTimeMillis();
-		write(SIZE, size);
 		write(TIME, end - start);
+		Iterator<?> it = phs.iterator();
+		while (it.hasNext())
+		{
+			long vertex = (Long) it.next();
+			Valuation v = generator.getValuation(vertex);
+			if (v == null)
+			{
+				throw new ExperimentException("A valuation index corresponds to no valuation");
+			}
+			m_testSuite.add(v);
+		}
+		write(SIZE, phs.size());
 		write(TIME_GENERATION, end_generation - start);
 		write(TIME_SOLVING, end - end_generation);
 		write(COVERAGE, 1);
+	}
+	
+	/**
+	 * Gets the category coverage ratio of a test suite for the same coverage
+	 * criterion as the one considered in this experiment.
+	 * @param test_suite The test suite
+	 * @return The coverage ratio
+	 */
+	public float getCoverage(Set<Valuation> test_suite)
+	{
+		CategoryCoverage cov = new CategoryCoverage(m_truncations);
+		return cov.getCoverage(m_formula, test_suite, m_testSuite);
 	}
 	
 	/**

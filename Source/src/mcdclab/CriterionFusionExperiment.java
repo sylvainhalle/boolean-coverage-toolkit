@@ -108,7 +108,8 @@ public class CriterionFusionExperiment extends FormulaBasedExperiment
 			all_truncations.addAll(st);
 		}
 		start = System.currentTimeMillis();
-		Hypergraph g_all = HypergraphGenerator.getGraph(m_formula, all_truncations);
+		HypergraphGenerator generator_all = new HypergraphGenerator();
+		Hypergraph g_all = generator_all.getGraph(m_formula, all_truncations);
 		PersistentHashSet hs_all = HittingSetRunner.runHittingSet(g_all);
 		end = System.currentTimeMillis();
 		write(TIME_GLOBAL, end - start);
@@ -119,7 +120,8 @@ public class CriterionFusionExperiment extends FormulaBasedExperiment
 		Set<Long> suite = new HashSet<Long>();
 		for (Set<Truncation> st : m_truncationSets)
 		{
-			Hypergraph g = HypergraphGenerator.getGraph(m_formula, st);
+			HypergraphGenerator generator = new HypergraphGenerator();
+			Hypergraph g = generator.getGraph(m_formula, st);
 			PersistentHashSet hs = HittingSetRunner.runHittingSet(g);
 			for (Object o : hs)
 			{

@@ -24,7 +24,18 @@ import java.util.Set;
 
 public class HypergraphGenerator
 {
-	public static Hypergraph getGraph(Operator phi, Set<Truncation> truncations)
+	/**
+	 * A list mapping valuations to integers (their position in the list)
+	 */
+	protected transient List<Valuation> m_indices;
+	
+	public HypergraphGenerator()
+	{
+		super();
+		m_indices = new ArrayList<Valuation>();
+	}
+	
+	public Hypergraph getGraph(Operator phi, Set<Truncation> truncations)
 	{
 		Truncation[] a_truncations = new Truncation[truncations.size()];
 		int i = 0;
@@ -35,7 +46,7 @@ public class HypergraphGenerator
 		return getGraph(phi, a_truncations);
 	}
 	
-	public static Hypergraph getGraph(Operator phi, Truncation ... truncations)
+	public Hypergraph getGraph(Operator phi, Truncation ... truncations)
 	{
 		Hypergraph h = new Hypergraph();
 		String[] vars = getSortedVariables(phi);
@@ -44,6 +55,7 @@ public class HypergraphGenerator
 		while (it.hasNext())
 		{
 			Valuation v = it.next();
+			m_indices.add(v);
 			HologramNode n = phi.evaluate(v);
 			for (Truncation t : truncations)
 			{
@@ -55,6 +67,11 @@ public class HypergraphGenerator
 			val_nb++;
 		}
 		return h;
+	}
+	
+	public Valuation getValuation(long index)
+	{
+		return m_indices.get((int) index);
 	}
 	
 	/**

@@ -39,28 +39,32 @@ public class HypergraphTest
 	@Test
 	public void test1()
 	{
-		Hypergraph h = HypergraphGenerator.getGraph(Or("a", "b"), KeepAll.instance);
+		HypergraphGenerator generator = new HypergraphGenerator();
+		Hypergraph h = generator.getGraph(Or("a", "b"), KeepAll.instance);
 		assertEquals(4, h.getEdgeCount());
 	}
 	
 	@Test
 	public void test2()
 	{
-		Hypergraph h = HypergraphGenerator.getGraph(Or("a", And("b", Not("c"))), KeepAll.instance);
+		HypergraphGenerator generator = new HypergraphGenerator();
+		Hypergraph h = generator.getGraph(Or("a", And("b", Not("c"))), KeepAll.instance);
 		assertEquals(8, h.getEdgeCount());
 	}
 	
 	@Test
 	public void test3()
 	{
-		Hypergraph h = HypergraphGenerator.getGraph(Or("a", "b"), new KeepVariable("a"));
+		HypergraphGenerator generator = new HypergraphGenerator();
+		Hypergraph h = generator.getGraph(Or("a", "b"), new KeepVariable("a"));
 		assertEquals(2, h.getEdgeCount());
 	}
 	
 	@Test
 	public void test4()
 	{
-		Hypergraph h = HypergraphGenerator.getGraph(Or(And("a", "b"), And("c", "d")), KeepClauses.instance);
+		HypergraphGenerator generator = new HypergraphGenerator();
+		Hypergraph h = generator.getGraph(Or(And("a", "b"), And("c", "d")), KeepClauses.instance);
 		assertEquals(4, h.getEdgeCount());
 	}
 }

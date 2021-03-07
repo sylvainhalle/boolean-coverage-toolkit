@@ -15,11 +15,13 @@
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package ca.uqac.lif.mcdc;
+package ca.uqac.lif.mcdc.test;
 
 import org.junit.Test;
 
 import ca.uqac.lif.mcdc.Atom;
+import ca.uqac.lif.mcdc.Conjunction;
+import ca.uqac.lif.mcdc.Disjunction;
 import ca.uqac.lif.mcdc.HologramNode;
 import ca.uqac.lif.mcdc.KeepIfCutpNfp;
 import ca.uqac.lif.mcdc.Operator;
