@@ -30,6 +30,7 @@ import ca.uqac.lif.labpal.macro.MacroMap;
 import ca.uqac.lif.labpal.macro.MacroNode;
 import ca.uqac.lif.petitpoucet.NodeFunction;
 
+import static mcdclab.HittingSetTestGenerationExperiment.CRITERION;
 import static mcdclab.HittingSetTestGenerationExperiment.NUM_EDGES;
 import static mcdclab.HittingSetTestGenerationExperiment.TIME;
 import static mcdclab.HittingSetTestGenerationExperiment.TIME_GENERATION;
@@ -51,12 +52,14 @@ public class HypergraphStats extends MacroMap
 		add("maxTimeHypergraphGeneration", "The maximum time (in seconds) to generate a hypergraph across all experiments");
 		add("maxTimeHypergraphSolving", "The maximum time (in seconds) to find a hypergraph cover across all experiments");
 		add("maxHypergraphSize", "The maximum number of hyperedges across all hypergraphs");
+		add("maxTimeHypergraphTwoWay", "The maximum time (in seconds) to generate a test suite with the hypergraph method on 2-way coverage");
+		add("maxTimeHypergraphThreeWay", "The maximum time (in seconds) to generate a test suite with the hypergraph method on 3-way coverage");
 	}
 
 	@Override
 	public void computeValues(Map<String,JsonElement> map)
 	{
-		long max_total = 0, max_generation = 0, max_solving = 0, max_size = 0;
+		long max_total = 0, max_generation = 0, max_solving = 0, max_size = 0, max_2way = 0, max_3way = 0;
 		for (Experiment e : m_lab.getExperiments())
 		{
 			if (e.getStatus() != Status.DONE || e.getClass() != HittingSetTestGenerationExperiment.class)
@@ -67,11 +70,22 @@ public class HypergraphStats extends MacroMap
 			max_generation = Math.max(max_generation, e.readInt(TIME_GENERATION));
 			max_solving = Math.max(max_solving, e.readInt(TIME_SOLVING));
 			max_size = Math.max(max_solving, e.readInt(NUM_EDGES));
+			String criterion = e.readString(CRITERION);
+			if (criterion.compareTo(TestSuiteGenerationFactory.C_2WAY) == 0)
+			{
+				max_2way = Math.max(max_2way, e.readInt(TIME));
+			}
+			if (criterion.compareTo(TestSuiteGenerationFactory.C_3WAY) == 0)
+			{
+				max_3way = Math.max(max_3way, e.readInt(TIME));
+			}
 		}
 		map.put("maxTimeHypergraphTotal", new JsonNumber(NumberHelper.roundToSignificantFigures((float) max_total / 1000f, 3)));
 		map.put("maxTimeHypergraphGeneration", new JsonNumber(NumberHelper.roundToSignificantFigures((float) max_generation / 1000f, 3)));
 		map.put("maxTimeHypergraphSolving", new JsonNumber(NumberHelper.roundToSignificantFigures((float) max_solving / 1000f, 3)));
 		map.put("maxTimeHypergraphSize", new JsonNumber(max_size));
+		map.put("maxTimeHypergraphTwoWay", new JsonNumber(NumberHelper.roundToSignificantFigures((float) max_2way / 1000f, 3)));
+		map.put("maxTimeHypergraphThreeWay", new JsonNumber(NumberHelper.roundToSignificantFigures((float) max_3way / 1000f, 3)));
 	}
 
 	@Override
