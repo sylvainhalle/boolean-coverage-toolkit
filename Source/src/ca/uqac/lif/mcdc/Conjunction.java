@@ -123,7 +123,7 @@ public class Conjunction extends Operator
 		{
 			if (i > 0)
 			{
-				out.append(SYMBOL);
+				out.append(" ").append(SYMBOL).append(" ");
 			}
 			m_operands.get(i).toString(out);
 		}

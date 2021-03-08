@@ -24,6 +24,7 @@ import ca.uqac.lif.labpal.Group;
 import ca.uqac.lif.labpal.Laboratory;
 import ca.uqac.lif.labpal.LatexNamer;
 import ca.uqac.lif.labpal.Region;
+import ca.uqac.lif.labpal.server.WebCallback;
 import ca.uqac.lif.labpal.table.ExperimentTable;
 import ca.uqac.lif.mcdc.ObjectIdentifier;
 import ca.uqac.lif.mcdc.Operator;
@@ -38,6 +39,7 @@ import ca.uqac.lif.synthia.random.RandomFloat;
 import ca.uqac.lif.synthia.random.RandomInteger;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
@@ -64,17 +66,19 @@ import static mcdclab.TestGenerationExperiment.TIME;
  */
 public class MyLaboratory extends Laboratory
 {
+	/** 
+	 * By setting this parameter to true, only "small" problem instances
+   * will be added to the lab (fewer variables, etc.). This is used to
+   * debug and test the lab and should be put to false for the final run. 
+	 */
+	protected boolean m_isSmall = false;
+
 	@Override
 	public void setup()
 	{
 		// Metadata
 		setAuthor("Sylvain Hallé");
 		setTitle("Boolean condition coverage with evaluation trees");
-
-		/* By setting this parameter to true, only "small" problem instances
-		   will be added to the lab (fewer variables, etc.). This is used to
-		   debug and test the lab and should be put to false for the final run. */
-		boolean small = false;
 
 		/* Set to true to include experiments with random test suites. */
 		boolean include_random = false;
@@ -108,7 +112,7 @@ public class MyLaboratory extends Laboratory
 			boolean specific = false;
 			if (c_line.hasOption("small"))
 			{
-				small = true;
+				m_isSmall = true;
 			}
 			if (c_line.hasOption("mcdc"))
 			{
@@ -153,7 +157,7 @@ public class MyLaboratory extends Laboratory
 		// Basic stats about all formulas in the benchmark
 		{
 			OperatorProvider oprov = new OperatorProvider();
-			addFormulas(oprov, small);
+			addFormulas(oprov, m_isSmall);
 			add(new FormulaStats(this, oprov));
 		}
 
@@ -217,7 +221,7 @@ public class MyLaboratory extends Laboratory
 			big_r.add(METHOD, RandomTestGenerationExperiment.NAME);
 			big_r.add(CRITERION, TestSuiteGenerationFactory.C_CLAUSE, TestSuiteGenerationFactory.C_PREDICATE, TestSuiteGenerationFactory.C_MCDC, TestSuiteGenerationFactory.C_2WAY, TestSuiteGenerationFactory.C_3WAY, TestSuiteGenerationFactory.C_MUMCUT);
 			OperatorProvider op_provider = new OperatorProvider();
-			addFormulas(op_provider, small);
+			addFormulas(op_provider, m_isSmall);
 			big_r.add(FORMULA, op_provider.getNames());
 
 			// The factory to generate experiments
@@ -255,7 +259,7 @@ public class MyLaboratory extends Laboratory
 			big_r.add(METHOD, HittingSetTestGenerationExperiment.NAME, MCDCTestGenerationExperiment.NAME);
 			big_r.add(CRITERION, TestSuiteGenerationFactory.C_MCDC);
 			OperatorProvider op_provider = new OperatorProvider();
-			addFormulas(op_provider, small);
+			addFormulas(op_provider, m_isSmall);
 			big_r.add(FORMULA, op_provider.getNames());
 
 			// The factory to generate experiments
@@ -338,7 +342,7 @@ public class MyLaboratory extends Laboratory
 			big_r.add(METHOD, HittingSetTestGenerationExperiment.NAME, ActsTestGenerationExperiment.NAME, RandomTestGenerationExperiment.NAME);
 			big_r.add(CRITERION, TestSuiteGenerationFactory.C_2WAY, TestSuiteGenerationFactory.C_3WAY);
 			OperatorProvider op_provider = new OperatorProvider();
-			addFormulas(op_provider, small);
+			addFormulas(op_provider, m_isSmall);
 			big_r.add(FORMULA, op_provider.getNames());
 
 			ObjectIdentifier<ToolTriplet> identifier = new ObjectIdentifier<ToolTriplet>();
@@ -421,7 +425,7 @@ public class MyLaboratory extends Laboratory
 			big_r.add(METHOD, HittingSetTestGenerationExperiment.NAME, Apsec99TestGenerationExperiment.NAME);
 			big_r.add(CRITERION, TestSuiteGenerationFactory.C_MUMCUT);
 			OperatorProvider op_provider = new OperatorProvider();
-			addFormulas(op_provider, small);
+			addFormulas(op_provider, m_isSmall);
 			big_r.add(FORMULA, op_provider.getNames());
 			Scanner scanner = new Scanner(FileHelper.internalFileToStream(MyLaboratory.class, "/mcdclab/results/chen1999.csv"));
 			Apsec99TestGenerationExperiment.addToLab(this, scanner, op_provider);
@@ -483,7 +487,7 @@ public class MyLaboratory extends Laboratory
 					CriterionFusionExperimentFactory.C_MCDC_2WAY,
 					CriterionFusionExperimentFactory.C_CLAUSE_2WAY);
 			OperatorProvider op_provider = new OperatorProvider();
-			addFormulas(op_provider, small);
+			addFormulas(op_provider, m_isSmall);
 			big_r.add(FORMULA, op_provider.getNames());
 
 			// The factory to generate experiments
@@ -661,6 +665,14 @@ public class MyLaboratory extends Laboratory
 	public String isEnvironmentOk()
 	{
 		return MCDCTestGenerationExperiment.isEnvironmentOk();
+	}
+
+	@Override
+	public void setupCallbacks(List<WebCallback> callbacks)
+	{
+		OperatorProvider oprov = new OperatorProvider();
+		addFormulas(oprov, m_isSmall);
+		callbacks.add(new AllFormulasCallback(this, oprov));
 	}
 
 	public static void main(String[] args)
