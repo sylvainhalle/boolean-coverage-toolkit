@@ -26,8 +26,15 @@ package mcdclab;
  */
 public abstract class DependentTestGenerationExperiment extends TestGenerationExperiment
 {
+	/**
+	 * The hitting set experiment that is used as a reference.
+	 */
 	protected transient HittingSetTestGenerationExperiment m_reference;
 	
+	/**
+	 * Creates a new instance of the experiment.
+	 * @param reference The hitting set experiment that is used as a reference
+	 */
 	public DependentTestGenerationExperiment(HittingSetTestGenerationExperiment reference)
 	{
 		super(reference.m_formula, reference.readString(FORMULA));

@@ -50,6 +50,7 @@ import static mcdclab.CriterionFusionExperiment.TIME_MERGED;
 import static mcdclab.FormulaBasedExperiment.FORMULA;
 import static mcdclab.FormulaBasedExperiment.FORMULA_SIZE;
 import static mcdclab.FormulaBasedExperiment.NUM_VARS;
+import static mcdclab.HittingSetTestGenerationExperiment.NUM_EDGES;
 import static mcdclab.HittingSetTestGenerationExperiment.TIME_GENERATION;
 import static mcdclab.HittingSetTestGenerationExperiment.TIME_SOLVING;
 import static mcdclab.TestGenerationExperiment.COVERAGE;
@@ -99,7 +100,7 @@ public class MyLaboratory extends Laboratory
 		   themselves are not added to the lab. This makes it possible to
 		   export artifacts normally (i.e. without creating LaTeX compilation
 		   errors) when running the lab on a subset of all experiments. */
-		boolean placeholders = false;
+		boolean placeholders = true;
 
 		// Read command line arguments
 		{
@@ -174,6 +175,20 @@ public class MyLaboratory extends Laboratory
 			plot.setTitle(t_gen_solving.getTitle());
 			add(plot);
 		}
+		HittingSetExperimentTable t_gen_size = new HittingSetExperimentTable(NUM_EDGES, TIME_SOLVING);
+		t_gen_size.setTitle("Solving time with respect to hypergraph size");
+		t_gen_size.setNickname("tSolvingTimeVsSizeHypergraph");
+		add(t_gen_size);
+		{
+			Scatterplot plot = new Scatterplot(t_gen_solving);
+			plot.setNickname("pSolvingTimeVsSizeHypergraph");
+			plot.withLines(false);
+			plot.setCaption(Axis.X, "Number of hyperedges");
+			plot.setCaption(Axis.Y, "Solving time (ms)");
+			plot.setLogscale(Axis.X);
+			plot.setTitle(t_gen_size.getTitle());
+			add(plot);
+		}
 		HypergraphMultiBinDistribution t_hypergraph_size_distro = new HypergraphMultiBinDistribution(false, 0, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000);
 		t_hypergraph_size_distro.setTitle("Hypergraph size distribution");
 		t_hypergraph_size_distro.setNickname("tHypergraphSizeDistro");
@@ -217,6 +232,7 @@ public class MyLaboratory extends Laboratory
 				}
 				g.add(e);
 				t_gen_solving.add(e);
+				t_gen_size.add(e);
 				t_hypergraph_size_distro.add(e);
 				et_coverage_random.add(e);
 			}
@@ -290,6 +306,7 @@ public class MyLaboratory extends Laboratory
 					t_hypergraph_size_distro.add(e);
 					et_time.add(e);
 					et_size.add(e);
+					t_gen_size.add(e);
 					et_size_vs_time.add(e);
 					et_f_size_vs_time.add(e);
 				}
@@ -372,6 +389,7 @@ public class MyLaboratory extends Laboratory
 					}
 					g.add(e);
 					t_gen_solving.add(e);
+					t_gen_size.add(e);
 					t_hypergraph_size_distro.add(e);
 					et_time.add(e);
 					et_size.add(e);
@@ -442,6 +460,7 @@ public class MyLaboratory extends Laboratory
 					}
 					g.add(e);
 					t_gen_solving.add(e);
+					t_gen_size.add(e);
 					t_hypergraph_size_distro.add(e);
 					et_size.add(e);
 					//et_coverage_random.add(e);
@@ -514,20 +533,36 @@ public class MyLaboratory extends Laboratory
 		}
 	}
 
-	protected static void addFormulas(OperatorProvider provider, boolean small)
+	protected void addFormulas(OperatorProvider provider, boolean small)
 	{
-		int num_formulas = 20;
+		int num_formulas = 20, random_seed = getRandomSeed();
 		{
 			DnfOperatorPicker picker = null;
 			if (small)
 			{
 				num_formulas = 10;
 				// Smaller random formulas
-				picker = new DnfOperatorPicker(new RandomInteger(2,10), new RandomInteger(2,15), new RandomFloat(), new RandomBoolean());
+				RandomInteger ri1 = new RandomInteger(2, 10);
+				RandomInteger ri2 = new RandomInteger(2, 15);
+				RandomFloat rf = new RandomFloat();
+				RandomBoolean rb = new RandomBoolean();
+				ri1.setSeed(random_seed + 1);
+				ri2.setSeed(random_seed + 2);
+				rf.setSeed(random_seed + 3);
+				rb.setSeed(random_seed + 4);
+				picker = new DnfOperatorPicker(ri1, ri2, rf, rb);
 			}
 			else
 			{
-				picker = new DnfOperatorPicker(new RandomInteger(2,14), new RandomInteger(2,20), new RandomFloat(), new RandomBoolean());
+				RandomInteger ri1 = new RandomInteger(2, 14);
+				RandomInteger ri2 = new RandomInteger(2, 20);
+				RandomFloat rf = new RandomFloat();
+				RandomBoolean rb = new RandomBoolean();
+				ri1.setSeed(random_seed + 1);
+				ri2.setSeed(random_seed + 2);
+				rf.setSeed(random_seed + 3);
+				rb.setSeed(random_seed + 4);
+				picker = new DnfOperatorPicker(ri1, ri2, rf, rb);
 			}
 			for (int i = 1; i < num_formulas; i++)
 			{
@@ -547,7 +582,7 @@ public class MyLaboratory extends Laboratory
 		}
 		{
 			FaaBenchmark benchmark = new FaaBenchmark();
-			for (int i = 1; i <= 20; i++) // All FAA
+			for (int i = 1; i <= num_formulas; i++) // All FAA
 			{
 				Operator op = benchmark.getFormula(i);
 				if (op != null && (!small || op.getVariables().size() < 10))

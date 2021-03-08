@@ -81,6 +81,11 @@ public class TestSuiteGenerationFactory extends FormulaBasedExperimentFactory<Te
 	protected boolean m_onlyHypergraph = false;
 	
 	/**
+	 * The current seed to give to experiments that need one.
+	 */
+	protected int m_currentSeed = 0;
+	
+	/**
 	 * Creates a new experiment factory.
 	 * @param lab The lab to which the experiments will be added
 	 * @param provider A provider for formulas
@@ -91,6 +96,7 @@ public class TestSuiteGenerationFactory extends FormulaBasedExperimentFactory<Te
 	{
 		super(lab, TestGenerationExperiment.class, provider);
 		m_onlyHypergraph = only_hypergraph;
+		m_currentSeed = m_lab.getRandomSeed();
 	}
 	
 	/**
@@ -199,9 +205,9 @@ public class TestSuiteGenerationFactory extends FormulaBasedExperimentFactory<Te
 		return e;
 	}
 	
-	protected static RandomTestGenerationExperiment getRandomExperiment(HittingSetTestGenerationExperiment reference, Operator formula, String formula_name, String criterion)
+	protected RandomTestGenerationExperiment getRandomExperiment(HittingSetTestGenerationExperiment reference, Operator formula, String formula_name, String criterion)
 	{
-		RandomTestGenerationExperiment e = new RandomTestGenerationExperiment(reference);
+		RandomTestGenerationExperiment e = new RandomTestGenerationExperiment(reference, m_currentSeed++);
 		e.setInput(CRITERION, criterion);
 		return e;
 	}

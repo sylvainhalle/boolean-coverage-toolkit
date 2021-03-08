@@ -42,10 +42,22 @@ public class RandomTestGenerationExperiment extends DependentTestGenerationExper
 	 */
 	public static final transient int NUM_RERUNS = 5;
 	
-	public RandomTestGenerationExperiment(HittingSetTestGenerationExperiment reference) 
+	/**
+	 * The starting seed for the random pickers.
+	 */
+	protected int m_seed;
+	
+	/**
+	 * Creates a new experiment instance.
+	 * @param reference @param reference The hitting set experiment that is used
+	 * as a reference
+	 * @param seed The starting seed for the random pickers
+	 */
+	public RandomTestGenerationExperiment(HittingSetTestGenerationExperiment reference, int seed) 
 	{
 		super(reference);
 		setInput(METHOD, NAME);
+		m_seed = seed;
 	}
 	
 	@Override
@@ -59,7 +71,7 @@ public class RandomTestGenerationExperiment extends DependentTestGenerationExper
 		}
 		setProgression(0.5f);
 		int target_size = m_reference.readInt(SIZE);
-		RandomBoolean bool = new RandomBoolean();
+		RandomBoolean bool = new RandomBoolean(m_seed);
 		ValuationPicker picker = new ValuationPicker(bool, m_formula.getSortedVariables());
 		float best_coverage = 0;
 		long start = System.currentTimeMillis();
@@ -77,6 +89,5 @@ public class RandomTestGenerationExperiment extends DependentTestGenerationExper
 		write(COVERAGE, best_coverage);
 		write(SIZE, target_size);
 		write(TIME, end - start);
-	}
-	
+	}	
 }
