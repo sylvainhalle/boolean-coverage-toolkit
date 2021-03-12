@@ -179,7 +179,7 @@ public class TestSuiteGenerationFactory extends FormulaBasedExperimentFactory<Te
 		if (method.compareTo(RandomTestGenerationExperiment.NAME) == 0)
 		{
 			Region new_r = r.set(METHOD, HittingSetTestGenerationExperiment.NAME);
-			HittingSetTestGenerationExperiment reference = (HittingSetTestGenerationExperiment) get(new_r);
+			HittingSetTestGenerationExperiment reference = (HittingSetTestGenerationExperiment) get(new_r, true);
 			return getRandomExperiment(reference, op, formula_name, r.getString(CRITERION));
 		}
 		if (method.compareTo(ActsTestGenerationExperiment.NAME) == 0)
@@ -226,8 +226,7 @@ public class TestSuiteGenerationFactory extends FormulaBasedExperimentFactory<Te
 			// mcdc only works for MC/DC coverage
 			return null;
 		}
-		Set<Truncation> truncations = getTruncations(formula, criterion);
-		MCDCTestGenerationExperiment e = new MCDCTestGenerationExperiment(formula, formula_name, truncations);
+		MCDCTestGenerationExperiment e = new MCDCTestGenerationExperiment(formula, formula_name);
 		e.setInput(CRITERION, criterion);
 		return e;
 	}

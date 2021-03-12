@@ -55,6 +55,7 @@ public abstract class FormulaBasedExperimentFactory<T extends FormulaBasedExperi
 				if (exp != null)
 				{
 					m_lab.add(exp);
+					exp.tellId(exp.getId());
 				}
 			}
 		}

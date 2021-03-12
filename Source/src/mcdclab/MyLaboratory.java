@@ -673,6 +673,7 @@ public class MyLaboratory extends Laboratory
 		OperatorProvider oprov = new OperatorProvider();
 		addFormulas(oprov, m_isSmall);
 		callbacks.add(new AllFormulasCallback(this, oprov));
+		callbacks.add(new HologramViewCallback(this));
 	}
 
 	public static void main(String[] args)

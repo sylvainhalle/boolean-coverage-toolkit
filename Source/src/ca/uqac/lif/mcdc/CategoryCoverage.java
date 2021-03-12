@@ -17,6 +17,9 @@
  */
 package ca.uqac.lif.mcdc;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class CategoryCoverage extends TruncationMetric
@@ -91,5 +94,32 @@ public class CategoryCoverage extends TruncationMetric
 			}
 		}
 		return (float) identifier_suite.countDistinctObjects() / (float) identifier_all.countDistinctObjects();
+	}
+	
+	/**
+	 * Computes the distribution of all valuations across equivalence classes
+	 * induced by the set of tree transformations. A distribution is an
+	 * associative map between a tree and an integer, representing the number
+	 * of valuations that produce the given tree.
+	 * @param formula The formula on which to apply the transformations
+	 * @return A set of distributions, one for each tree transformation
+	 */
+	public List<Map<HologramNode,Integer>> getCategoryDistribution(Operator formula)
+	{
+		String[] variables = formula.getSortedVariables();
+		List<Map<HologramNode,Integer>> distros = new ArrayList<Map<HologramNode,Integer>>(m_truncations.length);
+		for (Truncation t : m_truncations)
+		{
+			ObjectCounter<HologramNode> id = new ObjectCounter<HologramNode>();
+			ValuationIterator it = new ValuationIterator(variables);
+			while (it.hasNext())
+			{
+				Valuation v = it.next();
+				HologramNode n = t.applyTo(formula.evaluate(v));
+				id.seenBefore(n);
+			}
+			distros.add(id.m_objectIds);
+		}
+		return distros;
 	}
 }

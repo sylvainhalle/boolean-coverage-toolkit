@@ -46,6 +46,7 @@ public class ActsTestGenerationExperiment extends TestGenerationExperiment
 	public ActsTestGenerationExperiment(Operator formula, String formula_name, int t) 
 	{
 		super(formula, formula_name);
+		setDescription(formula.toString());
 		setInput(METHOD, NAME);
 		m_t = t;
 	}

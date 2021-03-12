@@ -325,7 +325,7 @@ public class HologramNode
 			else
 			{
 				HologramNode child = n.getChildren().get(i);
-				HologramNode new_child = new HologramNode(child.getLabel(), child.getValue());
+				HologramNode new_child = new HologramNode(child.getLabel(), null);
 				HologramNode new_under = new HologramNode(v, n.getLeafValue(v));
 				new_child.addChild(new_under);
 				new_n.addChild(new_child);

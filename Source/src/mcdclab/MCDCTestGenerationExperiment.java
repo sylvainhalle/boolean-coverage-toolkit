@@ -32,7 +32,6 @@ import ca.uqac.lif.mcdc.Conjunction;
 import ca.uqac.lif.mcdc.Disjunction;
 import ca.uqac.lif.mcdc.Negation;
 import ca.uqac.lif.mcdc.Operator;
-import ca.uqac.lif.mcdc.Truncation;
 import ca.uqac.lif.mcdc.Valuation;
 import ca.uqac.lif.mtnp.util.FileHelper;
 
@@ -40,47 +39,41 @@ import ca.uqac.lif.mtnp.util.FileHelper;
  * Generates test suites for MC/DC coverage by calling the external tool
  * <a href="https://github.com/sylvainhalle/MCDC">MCDC</a>.
  */
-public class MCDCTestGenerationExperiment extends HittingSetTestGenerationExperiment
+public class MCDCTestGenerationExperiment extends TestGenerationExperiment
 {
 	/**
 	 * The name of this tool
 	 */
 	public static final transient String NAME = "MCDC";
-	
+
 	/**
 	 * The name of the external command to be called.
 	 */
 	protected static final transient String s_appName = "/home/sylvain/Workspaces/MCDC/mcdc/bin/main";
-	
+
 	/**
 	 * The regex pattern to parse the contents of the test suite.
 	 */
 	protected static final transient Pattern s_testPattern = Pattern.compile("\\s+\\d+:\\s+(.*?)\\s+\\(\\d+\\)");
-	
+
 	/**
 	 * The regex pattern to extract the value of each variable in a test
 	 * suite.
 	 */
 	protected static final transient Pattern s_valuePattern = Pattern.compile("(.)=(\\d)");
-	
+
 	/**
 	 * A flag that checks if the tool used to generate test suites is present at
 	 * the expected location
 	 */
 	protected static boolean s_toolPresent = checkTool();
-	
-	public MCDCTestGenerationExperiment(Operator formula, String formula_name, Set<Truncation> truncations)
-	{
-		super(formula, formula_name, truncations);
-		setInput(METHOD, NAME);
-	}
-	
-	public MCDCTestGenerationExperiment(Operator formula, String formula_name, Truncation ... truncations)
-	{
-		super(formula, formula_name, truncations);
-		setInput(METHOD, NAME);
-	}
 
+	public MCDCTestGenerationExperiment(Operator formula, String formula_name)
+	{
+		super(formula, formula_name);
+		setInput(METHOD, NAME);
+		setDescription(formula.toString());
+	}
 
 	@Override
 	public void execute() throws ExperimentException, InterruptedException 
@@ -98,7 +91,7 @@ public class MCDCTestGenerationExperiment extends HittingSetTestGenerationExperi
 		String tool_output = new String(runner.getBytes());
 		writeData(tool_output);
 	}
-	
+
 	protected void writeData(String tool_output)
 	{
 		Matcher mat = s_testPattern.matcher(tool_output);
@@ -125,7 +118,7 @@ public class MCDCTestGenerationExperiment extends HittingSetTestGenerationExperi
 		}
 		write(SIZE, num_tests);
 	}
-	
+
 	/**
 	 * Gets a Boolean formula in the format expected by the external tool.
 	 * @param op The formula to print
@@ -138,7 +131,7 @@ public class MCDCTestGenerationExperiment extends HittingSetTestGenerationExperi
 		printExpression(ps, op);
 		return baos.toString();
 	}
-	
+
 	/**
 	 * Prints a Boolean formula in the format expected by the external
 	 * tool.
@@ -192,7 +185,7 @@ public class MCDCTestGenerationExperiment extends HittingSetTestGenerationExperi
 			ps.print(")");
 		}
 	}
-	
+
 	/**
 	 * Looks for the presence of the external tool.
 	 * @return <tt>true</tt> if the tool has been found, <tt>false</tt>
@@ -202,7 +195,7 @@ public class MCDCTestGenerationExperiment extends HittingSetTestGenerationExperi
 	{
 		return FileHelper.fileExists(s_appName);
 	}
-	
+
 	/**
 	 * Produces an error message if the external tool on which this experiment
 	 * relies cannot be found.

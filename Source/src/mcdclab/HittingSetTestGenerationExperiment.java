@@ -159,6 +159,46 @@ public class HittingSetTestGenerationExperiment extends TestGenerationExperiment
 	}
 	
 	/**
+	 * Gets the set of equivalence classes induced by the tree transformations
+	 * and the formula in this experiment. Note that this will return a non-empty
+	 * set only if the experiment has finished running and produced a test suite.
+	 * @return The set of equivalence classes
+	 */
+	public Set<HologramNode> getTrees()
+	{
+		Set<HologramNode> trees = new HashSet<HologramNode>(m_testSuite.size());
+		for (Valuation v : m_testSuite)
+		{
+			HologramNode original = m_formula.evaluate(v);
+			for (Truncation t : m_truncations)
+			{
+				HologramNode transformed = t.applyTo(original);
+				trees.add(transformed);
+			}
+		}
+		return trees;
+	}
+	
+	@Override
+	public void tellId(int id)
+	{
+		writeDescription();
+	}
+	
+	/**
+	 * Writes the description of the experiment.
+	 */
+	protected void writeDescription()
+	{
+		StringBuilder out = new StringBuilder();
+		out.append("<p>Generates a test suite using a reduction to hypergraph vertex covering. The formula used is:</p>\n");
+		out.append("<blockquote>\n").append(m_formula.toString()).append("\n</blockquote>\n");
+		out.append("<p><a href=\"/holograms/").append(getId()).append("\">See the equivalence classes</a> induced by this\n");
+		out.append("set of tree transformations (this may take a long time)</p>\n");
+		setDescription(out.toString());
+	}
+	
+	/**
 	 * Runs a dummy hitting set problem. This forces the JVM to load the
 	 * Clojure classes before running the first experiment, which factors out
 	 * this initial loading time. Otherwise, the first hitting set experiment

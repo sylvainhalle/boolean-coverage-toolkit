@@ -1,5 +1,80 @@
-<p>TODO</p>
+<h2>A benchmark for tree-based Boolean coverage criteria</h2>
+
+<p>This is an instance of the <a href="https://liflab.github.io/labpal">LabPal</a>
+experimental environment. It contains experiments aimed at comparing a new
+technique for Boolean test input generation to existing tools and algorithms.</p>
+
+<p>The results produced by this benchmark are presented in the following
+publication:</p>
+
+<blockquote>S. Hallé. <i>Test Suite Generation for Boolean Conditions with
+Equivalence Class Partitioning</i>. Submitted to FM 2021.</blockquote>
+
+<h3>What is Boolean test input generation?</h3>
+
+<p>Consider a Boolean expression &phi;
+formed of the traditional connectives &and; ("and"), &or; ("or") and &not;
+("not"). In this context, a test case is a particular way of assigning the
+values <code>true</code> and <code>false</code> to the variables contained in the
+formula. A test suite is a set of test cases. The goal of Boolean test input
+generation is to generate a test suite that satisfies a specific
+<strong>coverage criterion</strong>. For example, a criterion could be that
+for each variable <i>x</i>, there exist test cases where <i>x</i> takes
+both the value <i>true</i> and <i>false</i>.</p>
+
+<p>Many coverage criteria have been suggested in the past: MC/DC coverage,
+MUMCUT coverage, combinatorial or "t-way" coverage, clause coverage, etc.
+Algorithms and tools have been developed to generate test suites satisfying
+each of these criteria, ideally using the fewest possible test cases.</p>
+
+<h3>Purpose of this benchmark</h3>
+
+<p>In this benchmark, we compare a new technique for generating test suites
+according to a coverage criterion and a Boolean formula, using the concept
+of <i>tree transformation</i> and a reduction to the problem of hypergraph
+vertex covering. The benchmark runs this algorithm on multiple formulas and
+multiple criteria and measures the size of the generated test suite as well
+as the time taken to produce it. It also does the same thing for other tools:
+
+<ul>
+<li><a href="https://csrc.nist.gov/groups/SNS/acts/">ACTS</a> can be used to
+ generate test suites following combinatorial coverage</li>
+<li><a href="https://github.com/sylvainhalle/MCDC">mcdc</a> can be used to
+generate test suites following MC/DC coverage</li>
+<li>in addition, the lab contains a test suite generator that randomly
+picks test cases, to be used as a form of baseline</li>
+</ul>
+
+<p>The benchmark also contains results from this publication for MUMCUT coverage:</p>
+
+<blockquote>Chen, T., Lau, M., Yu, Y.: MUMCUT: a fault-based strategy for testing
+Boolean specifications. In: APSEC. pp. 606–613. IEEE Comp. Soc., Takamatsu,
+Japan (1999)</blockquote>
+
+<p>For all input problems where a comparison is possible, the benchmark dynamically
+produces <a href="/tables">tables</a> and <a href="/plots">plots</a> showing the
+respective test suite size/generation time of the hypergraph technique vs. its
+"competitors", among other things.</p>
 
 <h3>Formulas included in this benchmark</h3>
 
-<p>You can view the complete list of all formulas included in this benchmark by <a href="/formulas">clicking here</a>.</p>
+<p>The Boolean formulas used in this benchmark are taken from multiple sources:</p>
+
+<ol>
+<li>J.J. Chilenski. <i>An Investigation of Three Forms of the Modified Condition 
+Decision Coverage (MCDC) Criterion</i>. Technical Report DOT/FAA/AR-01/18, April 2001.
+A sample of 20 formulas from Appendix C is included.</li>
+<li>G.K. Kaminski, P. Ammann. Reducing logic test set size while preserving fault detection.
+<i>Softw. Test. Verification Reliab.</i> 21(3), 155–193 (2011). All the formulas from
+Appendix B are included.</li>
+<li>20 randomly generated formulas in Disjunctive Normal Form (DNF)</li>
+</ol>
+
+<p>You can view the complete list of all formulas included in this benchmark by
+<a href="/formulas">clicking here</a>.</p>
+
+<h3>How to use this benchmark</h3>
+
+<p>If you are not familiar with the
+<a href="https://liflab.github.io/labpal">LabPal</a>, please refer to the
+<a href="/help">Help page</a> for basic instructions.</p>

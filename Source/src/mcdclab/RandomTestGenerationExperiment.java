@@ -57,6 +57,7 @@ public class RandomTestGenerationExperiment extends DependentTestGenerationExper
 	{
 		super(reference);
 		setInput(METHOD, NAME);
+		setDescription(reference.m_formula.toString());
 		m_seed = seed;
 	}
 	

@@ -59,7 +59,6 @@ public abstract class FormulaBasedExperiment extends Experiment
 		setInput(FORMULA, formula_name);
 		setInput(FORMULA_SIZE, formula.getSize());
 		setInput(NUM_VARS, formula.getVariables().size());
-		setDescription(formula.toString());
 		m_formula = formula;
 	}
 	
@@ -71,6 +70,17 @@ public abstract class FormulaBasedExperiment extends Experiment
 	public FormulaBasedExperiment(Operator formula, String formula_name)
 	{
 		this(formula, formula_name, Status.PREREQ_OK);
+	}
+	
+	/**
+	 * Called by the factory to notify the experiment that an ID has been
+	 * assigned to it. This method circumvents the fact that an experiment does
+	 * not yet know its ID when its constructor is called.
+	 * @param id The experiment's id
+	 */
+	public void tellId(int id)
+	{
+		// Nothing to do; override if needed
 	}
 	
 	@Override
