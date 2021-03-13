@@ -111,4 +111,10 @@ public class KeepIfDetermines extends VariableBasedTruncation
 	{
 		return m_name;
 	}
+
+	@Override
+	public String toMathML()
+	{
+		return toString();
+	}
 }

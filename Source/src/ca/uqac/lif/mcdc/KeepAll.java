@@ -17,10 +17,19 @@
  */
 package ca.uqac.lif.mcdc;
 
+/**
+ * The identity transformation.
+ */
 public class KeepAll implements Truncation
 {
+	/**
+	 * A single publicly visible instance of the class.
+	 */
 	public static final KeepAll instance = new KeepAll();
 	
+	/**
+	 * Creates a new instance of the transformation.
+	 */
 	protected KeepAll()
 	{
 		super();
@@ -30,5 +39,11 @@ public class KeepAll implements Truncation
 	public HologramNode applyTo(HologramNode n)
 	{
 		return n;
+	}
+
+	@Override
+	public String toMathML()
+	{
+		return "<msub><mi>&tau;</mi><mi>I</mi></msub>";
 	}
 }

@@ -193,7 +193,16 @@ public class HittingSetTestGenerationExperiment extends TestGenerationExperiment
 		StringBuilder out = new StringBuilder();
 		out.append("<p>Generates a test suite using a reduction to hypergraph vertex covering. The formula used is:</p>\n");
 		out.append("<blockquote>\n").append(m_formula.toString()).append("\n</blockquote>\n");
-		out.append("<p><a href=\"/holograms/").append(getId()).append("\">See the equivalence classes</a> induced by this\n");
+		out.append("<p>The set of ").append(m_truncations.length).append(" tree transformations is: ");
+		for (int i = 0; i < m_truncations.length; i++)
+		{
+			if (i > 0)
+			{
+				out.append(", ");
+			}
+			out.append("<math>").append(m_truncations[i].toMathML()).append("</math> ");
+		}
+		out.append("</p>\n\n<p><a href=\"/holograms/").append(getId()).append("\">See the equivalence classes</a> induced by this\n");
 		out.append("set of tree transformations (this may take a long time)</p>\n");
 		setDescription(out.toString());
 	}

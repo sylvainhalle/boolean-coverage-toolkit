@@ -60,9 +60,10 @@ public class HypergraphGenerator
 			for (Truncation t : truncations)
 			{
 				HologramNode truncated = t.applyTo(n);
-				//System.out.println(t);
-				//System.out.println(truncated);
-				h.addTo(truncated, val_nb);
+				if (n != null)
+				{
+					h.addTo(truncated, val_nb);
+				}
 			}
 			val_nb++;
 		}

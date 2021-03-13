@@ -44,7 +44,7 @@ public class KeepIfCutpNfp extends KeepIfMultipleNearFalsePoint
 		{
 			return keepVariables(n);
 		}
-		return HologramNode.dummyNode();
+		return null;
 	}
 
 	/**
@@ -161,5 +161,11 @@ public class KeepIfCutpNfp extends KeepIfMultipleNearFalsePoint
 			}
 		}
 		return out_set;
+	}
+	
+	@Override
+	public String toMathML()
+	{
+		return "<msubsup><mi>&tau;</mi> <mrow><mi>" + m_variableName + "</mi><mo>,</mo><mn>" + m_clauseNb + "</mn> </mrow><ms>CUTPNFP</ms></msubsup>";
 	}
 }

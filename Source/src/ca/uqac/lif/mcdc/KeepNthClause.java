@@ -45,7 +45,7 @@ public class KeepNthClause extends ClauseBasedTruncation
 			}
 			else
 			{
-				HologramNode new_c = new HologramNode("?", null);
+				HologramNode new_c = HologramNode.dummyNode();
 				new_n.addChild(new_c);
 			}
 		}
@@ -67,5 +67,11 @@ public class KeepNthClause extends ClauseBasedTruncation
 			out_set.add(new KeepNthClause(i));
 		}
 		return out_set;
+	}
+	
+	@Override
+	public String toMathML()
+	{
+		return "<msubsup><mi>&tau;</mi> <mn>" + m_clauseNb + "</mn> <ms>C</ms></msubsup>";
 	}
 }

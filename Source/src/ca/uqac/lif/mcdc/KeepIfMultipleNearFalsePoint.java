@@ -20,6 +20,10 @@ package ca.uqac.lif.mcdc;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * Tree transformation for the Multiple Near False Point (MNFP) coverage
+ * criterion.
+ */
 public class KeepIfMultipleNearFalsePoint extends ClauseBasedTruncation
 {
 	/**
@@ -51,7 +55,7 @@ public class KeepIfMultipleNearFalsePoint extends ClauseBasedTruncation
 		{
 			return HologramNode.getLeafForOtherVariable(n, m_clauseNb, m_variableToGet);
 		}
-		return HologramNode.dummyNode();
+		return null;
 	}
 
 	/**
@@ -126,5 +130,11 @@ public class KeepIfMultipleNearFalsePoint extends ClauseBasedTruncation
 			}
 		}
 		return out_set;
+	}
+	
+	@Override
+	public String toMathML()
+	{
+		return "<msubsup><mi>&tau;</mi> <mrow><mi>" + m_variableName + "</mi><mo>,</mo><mn>" + m_clauseNb + "</mn> </mrow> <ms>MNFP</ms></msubsup>";
 	}
 }

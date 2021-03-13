@@ -55,4 +55,10 @@ public class KeepVariable extends VariableBasedTruncation
 		}
 		return null;
 	}
+	
+	@Override
+	public String toMathML()
+	{
+		return "<msup><mi>&tau;</mi><mi>" + m_name + "</mi></msup>";
+	}
 }

@@ -17,10 +17,21 @@
  */
 package ca.uqac.lif.mcdc;
 
+/**
+ * Truncates a tree at the second level. For a formula in DNF, this
+ * corresponds to keeping the root node of each clause, but not their
+ * children. 
+ */
 public class KeepClauses implements Truncation
 {
+	/**
+	 * A single publicly visible instance of the class.
+	 */
 	public static final KeepClauses instance = new KeepClauses();
 	
+	/**
+	 * Creates a new instance of the transformation.
+	 */
 	protected KeepClauses()
 	{
 		super();
@@ -43,5 +54,11 @@ public class KeepClauses implements Truncation
 			root.addChild(new_c);
 		}
 		return root;
+	}
+	
+	@Override
+	public String toMathML()
+	{
+		return "<msub><mi>&tau;</mi><ms>&darr;2</ms></msub>";
 	}
 }

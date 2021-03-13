@@ -132,4 +132,19 @@ public class KeepValuesOf implements Truncation
 	{
 		return "τ" + m_variables;
 	}
+	
+	@Override
+	public String toMathML()
+	{
+		String vars = "";
+		for (int i = 0; i < m_variables.size(); i++)
+		{
+			if (i > 0)
+			{
+				vars += "<mo>,</mo>";
+			}
+			vars += "<mi>" + m_variables.get(i) + "</mi>";
+		}
+		return "<msup><mi>&tau;</mi><mrow>" + vars + "</mrow></msup>";
+	}
 }

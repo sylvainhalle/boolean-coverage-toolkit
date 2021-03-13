@@ -116,6 +116,7 @@ public class CategoryCoverage extends TruncationMetric
 			{
 				Valuation v = it.next();
 				HologramNode n = t.applyTo(formula.evaluate(v));
+				if (n != null)
 				id.seenBefore(n);
 			}
 			distros.add(id.m_objectIds);

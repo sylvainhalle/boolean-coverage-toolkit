@@ -47,7 +47,7 @@ public class KeepIfMultipleUniqueTruePoint extends ClauseBasedTruncation
 			if (i != m_clauseNb && c.getValue() != null && c.getValue() == true)
 			{
 				// Another clause is true, so no unique true point
-				return HologramNode.dummyNode();
+				return null;
 			}
 		}
 		return HologramNode.getLeafForOtherVariable(n, m_clauseNb, m_variableToGet);
@@ -72,5 +72,11 @@ public class KeepIfMultipleUniqueTruePoint extends ClauseBasedTruncation
 			}
 		}
 		return out_set;
+	}
+	
+	@Override
+	public String toMathML()
+	{
+		return "<msubsup><mi>&tau;</mi> <mn>" + m_clauseNb + "</mn> <ms>MNFP</ms></msubsup>";
 	}
 }

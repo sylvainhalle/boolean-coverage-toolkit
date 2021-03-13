@@ -313,7 +313,7 @@ public class HologramNode
 	{
 		if (n.getChildren().get(child_nb).hasLabel(v))
 		{
-			return HologramNode.dummyNode();
+			return null;
 		}
 		HologramNode new_n = new HologramNode(n.getLabel(), n.getValue());
 		for (int i = 0; i < n.getChildren().size(); i++)

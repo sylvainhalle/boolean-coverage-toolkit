@@ -40,13 +40,7 @@ public class KeepIfUniquelyDetermines extends VariableBasedTruncation
 	@Override
 	public HologramNode applyTo(HologramNode n)
 	{
-		HologramNode new_n = determines(n, m_name);
-		if (new_n == null)
-		{
-			new_n = new HologramNode("?");
-			new_n.setValue(n.getValue());
-		}
-		return new_n;
+		return determines(n, m_name);
 	}
 	
 	public static HologramNode determines(HologramNode n, String var_name)
@@ -120,5 +114,11 @@ public class KeepIfUniquelyDetermines extends VariableBasedTruncation
 	public String toString()
 	{
 		return m_name;
+	}
+	
+	@Override
+	public String toMathML()
+	{
+		return toString();
 	}
 }

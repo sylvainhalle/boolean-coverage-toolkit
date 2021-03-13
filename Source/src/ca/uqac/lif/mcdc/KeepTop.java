@@ -53,4 +53,10 @@ public class KeepTop implements Truncation
 		}
 		return new_n;
 	}
+	
+	@Override
+	public String toMathML()
+	{
+		return "<msub><mi>&tau;</mi><ms>&darr;" + m_depth + "</ms></msub>";
+	}
 }

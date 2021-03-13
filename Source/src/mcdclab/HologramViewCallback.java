@@ -22,6 +22,8 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import ca.uqac.lif.labpal.CommandRunner;
 import ca.uqac.lif.labpal.Experiment;
@@ -33,12 +35,24 @@ import ca.uqac.lif.mcdc.CategoryCoverage;
 import ca.uqac.lif.mcdc.HologramDotRenderer;
 import ca.uqac.lif.mcdc.HologramNode;
 
+/**
+ * Displays the holograms produced by the evaluation of a formula, for a set
+ * of tree transformations. This page requires the presence of GraphViz on the
+ * host machine; otherwise a message will be shown saying that the trees
+ * cannot be represented graphically.
+ */
 public class HologramViewCallback extends TemplatePageCallback
 {
 	/**
 	 * A flag that determines if GraphViz is present in the system.
 	 */
 	public static final transient boolean s_graphvizPresent = checkGraphViz();
+
+	/**
+	 * A regex pattern to remove the XML preamble in GraphViz-generated SVG
+	 * documents
+	 */
+	protected static final Pattern s_xmlPattern = Pattern.compile("<svg .*</svg>", Pattern.DOTALL);
 
 	/**
 	 * Creates a new instance of the callback.
@@ -49,7 +63,13 @@ public class HologramViewCallback extends TemplatePageCallback
 		super("/holograms", lab, null);
 		m_filename = "resource/index.html";
 	}
-	
+
+	/**
+	 * Fills the content of the page.
+	 * @param contents The string builder where the contents of the page will be printed
+	 * @param params Any parameters fetched from the page's URL when it was called
+	 * @param is_offline Set to <tt>true</tt> to generate the page for offline use
+	 */
 	protected void fill(StringBuilder contents, Map<String, String> params, boolean is_offline)
 	{
 		if (!s_graphvizPresent)
@@ -81,6 +101,8 @@ public class HologramViewCallback extends TemplatePageCallback
 			contents.append("<p>This experiment has not run yet. Please <a href=\"/experiment/").append(exp_id).append("\">run the experiment</a> first.</p>");
 			return;
 		}
+		contents.append("<p>The original expression is:</p>\n\n");
+		contents.append("<blockquote>").append(hstge.m_formula).append("</blockquote>\n\n");
 		contents.append("<p>Here is the set of all equivalence classes induced by the set of tree transformations of this coverage criterion.</p>\n");
 		if (!with_cardinality)
 		{
@@ -88,7 +110,7 @@ public class HologramViewCallback extends TemplatePageCallback
 			Set<HologramNode> trees = hstge.getTrees();
 			for (HologramNode tree : trees)
 			{
-				renderTree(contents, tree);
+				renderTree(contents, tree, true);
 			}
 		}
 		else
@@ -98,21 +120,40 @@ public class HologramViewCallback extends TemplatePageCallback
 			for (int i = 0; i < distros.size(); i++)
 			{
 				Map<HologramNode,Integer> distro = distros.get(i);
-				contents.append("<h3>Transformation ").append(hstge.m_truncations[i]).append("</h3>\n\n");
-				contents.append("<table border=\"1\">\n<tr><th>Category</th><th>Size</th></tr>\n");
-				for (Map.Entry<HologramNode,Integer> entry : distro.entrySet())
+				contents.append("<h3>Transformation <math>").append(hstge.m_truncations[i].toMathML()).append("</math></h3>\n\n");
+				if (distro.isEmpty())
 				{
-					contents.append("<tr><td>");
-					renderTree(contents, entry.getKey());
-					contents.append("</td><td>").append(entry.getValue()).append("</td></tr>\n");
+					contents.append("<p>All valuations produce the empty tree.</p>\n");
 				}
-				contents.append("</table>\n");
+				else
+				{
+					contents.append("<table border=\"1\">\n<tr><th>Category</th><th>Size</th></tr>\n");
+					for (Map.Entry<HologramNode,Integer> entry : distro.entrySet())
+					{
+						contents.append("<tr><td>");
+						renderTree(contents, entry.getKey(), true);
+						contents.append("</td><td>").append(entry.getValue()).append("</td></tr>\n");
+					}
+					contents.append("</table>\n");
+				}
 			}
 		}
 	}
-	
-	protected void renderTree(StringBuilder contents, HologramNode tree)
+
+	/**
+	 * Prints an SVG element produced by calling GraphViz on a {@link HologramNode}.
+	 * @param contents The contents where the SVG element should be printed 
+	 * @param tree The tree to render as an SVG
+	 * @param inline Set to <tt>true</tt> to produce only the SVG tag (for inline
+	 * SVG inside another HTML document)
+	 */
+	protected void renderTree(StringBuilder contents, HologramNode tree, boolean inline)
 	{
+		if (tree == null)
+		{
+			// Empty tree, do nothing
+			return;
+		}
 		// Render tree as a GraphViz document
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		PrintStream ps = new PrintStream(baos);
@@ -120,9 +161,17 @@ public class HologramViewCallback extends TemplatePageCallback
 		hdr.render(tree, ps);
 		// Create picture out of this document
 		String svg_contents = runDot(baos.toString());
+		if (inline)
+		{
+			Matcher mat = s_xmlPattern.matcher(svg_contents);
+			if (mat.find())
+			{
+				svg_contents = mat.group(0);
+			}
+		}
 		contents.append(svg_contents);
 	}
-	
+
 	/**
 	 * Runs GraphViz on a DOT file to render its contents in SVG format.
 	 * @param contents The contents of the DOT file.
@@ -145,7 +194,7 @@ public class HologramViewCallback extends TemplatePageCallback
 		s = s.replace("{%LAB_DESCRIPTION%}", contents.toString());
 		return s;
 	}
-	
+
 	/**
 	 * Checks if GraphViz is present in the system by attempting to run it.
 	 * @return <tt>true</tt> if GraphViz is found, <tt>false</tt> otherwise
