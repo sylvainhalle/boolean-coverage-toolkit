@@ -23,23 +23,24 @@
        script's default values -->
 
   <!-- The project's name -->
-  <name>My Laboratory</name>
+  <name>Boolean Coverage Benchmark</name>
   
   <!-- The project's version number -->
   <version>1.0</version>
   
   <!-- The project's author. Currently this only
   shows up in the footer of the Javadoc documentation. -->
-  <author>Emmett Brown</author>
+  <author>Sylvain Hallé</author>
   
   <!-- The project's main class -->
   <mainclass>MyLaboratory</mainclass>
   
   <!-- Output jar -->
   <jar>
-    <filename>my-lab.jar</filename>
+    <filename>boolean-coverage-lab.jar</filename>
     <withdeps>true</withdeps>
-    <withdoc>false</withdoc>
+    <withdoc>true</withdoc>
+    <withsrc>true</withsrc>
   </jar>
   
   <!-- Redefine directories -->
@@ -62,6 +63,17 @@
       <bundle>true</bundle>
       <files>
         <zip>https://github.com/liflab/labpal/releases/download/v2.11.8/labpal-2.11.8.zip</zip>
+      </files>
+    </dependency>
+    <dependency>
+      <!--
+      Synthia. Used to generate random formulas and valuations.
+      -->
+      <name>Synthia</name>
+      <classname>ca.uqac.lif.synthia.Picker</classname>
+      <bundle>true</bundle>
+      <files>
+        <zip>https://github.com/liflab/synthia/releases/download/v0.2/synthia-0.2.zip</zip>
       </files>
     </dependency>
   </dependencies>
