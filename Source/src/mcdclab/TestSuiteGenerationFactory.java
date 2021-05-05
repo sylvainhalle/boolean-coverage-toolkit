@@ -219,6 +219,13 @@ public class TestSuiteGenerationFactory extends FormulaBasedExperimentFactory<Te
 		return null;
 	}
 	
+	protected static Apsec99TestGenerationExperiment getStvr06Experiment(Operator formula, String formula_name, String criterion)
+	{
+		// Don't care returning something; since all STVR experiments are
+		// created beforehand, this method is not supposed to be called
+		return null;
+	}
+	
 	protected static MCDCTestGenerationExperiment getMCDCExperiment(Operator formula, String formula_name, String criterion)
 	{
 		if (!criterion.endsWith("DC"))

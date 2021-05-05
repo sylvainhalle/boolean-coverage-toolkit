@@ -422,13 +422,21 @@ public class MyLaboratory extends Laboratory
 
 			// A big region encompassing all the lab's parameters
 			Region big_r = new Region();
-			big_r.add(METHOD, HittingSetTestGenerationExperiment.NAME, Apsec99TestGenerationExperiment.NAME);
+			big_r.add(METHOD, HittingSetTestGenerationExperiment.NAME, Apsec99TestGenerationExperiment.NAME, Stvr06TestGenerationExperiment.NAME);
 			big_r.add(CRITERION, TestSuiteGenerationFactory.C_MUMCUT);
 			OperatorProvider op_provider = new OperatorProvider();
 			addFormulas(op_provider, m_isSmall);
 			big_r.add(FORMULA, op_provider.getNames());
-			Scanner scanner = new Scanner(FileHelper.internalFileToStream(MyLaboratory.class, "/mcdclab/results/chen1999.csv"));
-			Apsec99TestGenerationExperiment.addToLab(this, scanner, op_provider);
+			{
+				// APSEC'99 results for MUMCUT
+				Scanner scanner = new Scanner(FileHelper.internalFileToStream(MyLaboratory.class, "/mcdclab/results/chen1999.csv"));
+				Apsec99TestGenerationExperiment.addToLab(this, scanner, op_provider);
+			}
+			{
+				// STVR'06 results for MUMCUT
+				Scanner scanner = new Scanner(FileHelper.internalFileToStream(MyLaboratory.class, "/mcdclab/results/g-cun06.csv"));
+				Stvr06TestGenerationExperiment.addToLab(this, scanner, op_provider);
+			}
 			// The factory to generate experiments
 			TestSuiteGenerationFactory factory = new TestSuiteGenerationFactory(this, op_provider, only_hypergraph);
 			for (Region c_r : big_r.all(CRITERION))

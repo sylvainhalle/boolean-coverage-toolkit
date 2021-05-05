@@ -1,0 +1,29 @@
+# Results of MUMCUT coverage for the G-CUN criterion from Yu et al., STVR 2006
+# These numbers are copied from Table 2 of the paper (p. 829), column G-CUN.
+# Since the numbers in the original table are expressed as percentages of the
+# size of the exhaustive test set, these two columns are multiplied to obtain
+# the size of the test set in number of test cases.
+#
+#Formula name*	Size
+#---------------------------
+
+TCAS 1			38.528
+TCAS 2			116.224
+TCAS 3			1026.57
+TCAS 4			11.68
+TCAS 5			232.48
+TCAS 6			88.064
+TCAS 7			101.376
+TCAS 8			36.096
+TCAS 9			16
+TCAS 10			81.92
+TCAS 11			122.88
+TCAS 12			114.688
+TCAS 13			1687
+TCAS 14			36.864
+TCAS 15			60.416
+TCAS 16			159.744
+TCAS 17			75.776
+TCAS 18			75.776
+TCAS 19			44.288
+TCAS 20			24.064
