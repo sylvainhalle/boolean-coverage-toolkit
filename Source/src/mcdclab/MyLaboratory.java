@@ -68,10 +68,15 @@ public class MyLaboratory extends Laboratory
 {
 	/** 
 	 * By setting this parameter to true, only "small" problem instances
-   * will be added to the lab (fewer variables, etc.). This is used to
-   * debug and test the lab and should be put to false for the final run. 
+	 * will be added to the lab (fewer variables, etc.). This is used to
+	 * debug and test the lab and should be put to false for the final run. 
 	 */
 	protected boolean m_isSmall = false;
+	
+	/**
+	 * The timeout used to cancel experiments, in milliseconds
+	 */
+	protected long m_timeout = -1;
 
 	@Override
 	public void setup()
@@ -113,6 +118,10 @@ public class MyLaboratory extends Laboratory
 			if (c_line.hasOption("small"))
 			{
 				m_isSmall = true;
+			}
+			if (c_line.hasOption("timeout"))
+			{
+				m_timeout = Integer.parseInt(c_line.getOptionValue("timeout").trim()) * 1000;
 			}
 			if (c_line.hasOption("mcdc"))
 			{
@@ -225,7 +234,7 @@ public class MyLaboratory extends Laboratory
 			big_r.add(FORMULA, op_provider.getNames());
 
 			// The factory to generate experiments
-			TestSuiteGenerationFactory factory = new TestSuiteGenerationFactory(this, op_provider, only_hypergraph);
+			TestSuiteGenerationFactory factory = new TestSuiteGenerationFactory(this, op_provider, only_hypergraph, m_timeout);
 
 			for (Region f_r : big_r.all(METHOD, CRITERION, FORMULA))
 			{
@@ -263,7 +272,7 @@ public class MyLaboratory extends Laboratory
 			big_r.add(FORMULA, op_provider.getNames());
 
 			// The factory to generate experiments
-			TestSuiteGenerationFactory factory = new TestSuiteGenerationFactory(this, op_provider, only_hypergraph);
+			TestSuiteGenerationFactory factory = new TestSuiteGenerationFactory(this, op_provider, only_hypergraph, m_timeout);
 
 			for (Region c_r : big_r.all(CRITERION))
 			{
@@ -348,7 +357,7 @@ public class MyLaboratory extends Laboratory
 			ObjectIdentifier<ToolTriplet> identifier = new ObjectIdentifier<ToolTriplet>();
 
 			// The factory to generate experiments
-			TestSuiteGenerationFactory factory = new TestSuiteGenerationFactory(this, op_provider, only_hypergraph);
+			TestSuiteGenerationFactory factory = new TestSuiteGenerationFactory(this, op_provider, only_hypergraph, m_timeout);
 
 			for (Region c_r : big_r.all(CRITERION))
 			{
@@ -440,7 +449,7 @@ public class MyLaboratory extends Laboratory
 				Stvr06TestGenerationExperiment.addToLab(this, scanner, op_provider);
 			}
 			// The factory to generate experiments
-			TestSuiteGenerationFactory factory = new TestSuiteGenerationFactory(this, op_provider, only_hypergraph);
+			TestSuiteGenerationFactory factory = new TestSuiteGenerationFactory(this, op_provider, only_hypergraph, m_timeout);
 			for (Region c_r : big_r.all(CRITERION))
 			{
 				String criterion = c_r.getString(CRITERION);
@@ -675,6 +684,7 @@ public class MyLaboratory extends Laboratory
 		parser.addArgument(new Argument().withLongName("tway").withDescription("Run combinatorial experiments"));
 		parser.addArgument(new Argument().withLongName("merging").withDescription("Run criterion merging experiments"));
 		parser.addArgument(new Argument().withLongName("only-hypergraph").withDescription("Run only hypergraph experiments"));
+		parser.addArgument(new Argument().withLongName("timeout").withDescription("Timeout experiments after x sec").withArgument("x"));
 	}
 
 	@Override

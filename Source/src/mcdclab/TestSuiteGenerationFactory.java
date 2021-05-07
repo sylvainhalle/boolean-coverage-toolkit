@@ -86,27 +86,37 @@ public class TestSuiteGenerationFactory extends FormulaBasedExperimentFactory<Te
 	protected int m_currentSeed = 0;
 	
 	/**
+	 * The maximum duration allowed in experiments, in milliseconds.
+	 */
+	protected long m_maxDuration = -1;
+	
+	/**
 	 * Creates a new experiment factory.
 	 * @param lab The lab to which the experiments will be added
 	 * @param provider A provider for formulas
 	 * @param only_hypergraph Set to <tt>true</tt> to generate only
 	 * hypergraph experiments
+	 * @param max_duration The maximum duration allowed in experiments, in
+	 * milliseconds; -1 indicates no limit
 	 */
-	public TestSuiteGenerationFactory(MyLaboratory lab, OperatorProvider provider, boolean only_hypergraph)
+	public TestSuiteGenerationFactory(MyLaboratory lab, OperatorProvider provider, boolean only_hypergraph, long max_duration)
 	{
 		super(lab, TestGenerationExperiment.class, provider);
 		m_onlyHypergraph = only_hypergraph;
 		m_currentSeed = m_lab.getRandomSeed();
+		m_maxDuration = max_duration;
 	}
 	
 	/**
 	 * Creates a new experiment factory.
 	 * @param lab The lab to which the experiments will be added
 	 * @param provider A provider for formulas 
+	 * @param max_duration The maximum duration allowed in experiments, in
+	 * milliseconds
 	 */
-	public TestSuiteGenerationFactory(MyLaboratory lab, OperatorProvider provider)
+	public TestSuiteGenerationFactory(MyLaboratory lab, OperatorProvider provider, long max_duration)
 	{
-		this(lab, provider, false);
+		this(lab, provider, false, max_duration);
 	}
 	
 	public static Set<Truncation> getTruncations(Operator formula, String criterion)
@@ -170,31 +180,41 @@ public class TestSuiteGenerationFactory extends FormulaBasedExperimentFactory<Te
 		String method = r.getString(METHOD);
 		if (method.compareTo(HittingSetTestGenerationExperiment.NAME) == 0)
 		{
-			return getHittingSetExperiment(op, formula_name, r.getString(CRITERION));
+			TestGenerationExperiment tge = getHittingSetExperiment(op, formula_name, r.getString(CRITERION));
+			if (tge != null)
+			{
+				tge.setMaxDuration(m_maxDuration);
+			}
+			return tge;
 		}
 		if (m_onlyHypergraph)
 		{
 			return null;
 		}
+		TestGenerationExperiment tge = null;
 		if (method.compareTo(RandomTestGenerationExperiment.NAME) == 0)
 		{
 			Region new_r = r.set(METHOD, HittingSetTestGenerationExperiment.NAME);
 			HittingSetTestGenerationExperiment reference = (HittingSetTestGenerationExperiment) get(new_r, true);
-			return getRandomExperiment(reference, op, formula_name, r.getString(CRITERION));
+			tge = getRandomExperiment(reference, op, formula_name, r.getString(CRITERION));
 		}
 		if (method.compareTo(ActsTestGenerationExperiment.NAME) == 0)
 		{
-			return getActsExperiment(op, formula_name, r.getString(CRITERION));
+			tge = getActsExperiment(op, formula_name, r.getString(CRITERION));
 		}
 		if (method.compareTo(MCDCTestGenerationExperiment.NAME) == 0)
 		{
-			return getMCDCExperiment(op, formula_name, r.getString(CRITERION));
+			tge = getMCDCExperiment(op, formula_name, r.getString(CRITERION));
 		}
 		if (method.compareTo(Apsec99TestGenerationExperiment.NAME) == 0)
 		{
-			return getApsec99Experiment(op, formula_name, r.getString(CRITERION));
+			tge = getApsec99Experiment(op, formula_name, r.getString(CRITERION));
 		}
-		return null;
+		if (tge != null)
+		{
+			tge.setMaxDuration(m_maxDuration);
+		}
+		return tge;
 	}
 
 	protected static HittingSetTestGenerationExperiment getHittingSetExperiment(Operator formula, String formula_name, String criterion)

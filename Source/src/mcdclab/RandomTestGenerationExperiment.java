@@ -79,7 +79,6 @@ public class RandomTestGenerationExperiment extends DependentTestGenerationExper
 		for (int run = 0; run < NUM_RERUNS; run++)
 		{
 			Set<Valuation> suite = new HashSet<Valuation>(target_size);
-			
 			for (int i = 0; i < target_size; i++)
 			{
 				suite.add(picker.pick());

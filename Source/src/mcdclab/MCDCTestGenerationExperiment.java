@@ -83,10 +83,15 @@ public class MCDCTestGenerationExperiment extends TestGenerationExperiment
 			// External tool not present; fail
 			throw new ExperimentException("External tool could not be executed");
 		}
-		CommandRunner runner = new CommandRunner(new String[] {s_appName, "-umdnf", "-s", getExpression(m_formula)});
+		TimeoutCommandRunner runner = new TimeoutCommandRunner(new String[] {s_appName, "-umdnf", "-s", getExpression(m_formula)});
+		runner.setTimeout(getMaxDuration());
 		long start = System.currentTimeMillis();
 		runner.run();
 		long end = System.currentTimeMillis();
+		if (runner.getErrorCode() == Integer.MIN_VALUE)
+		{
+			throw new ExperimentException("Timed out");
+		}
 		write(TIME, end - start);
 		String tool_output = new String(runner.getBytes());
 		writeData(tool_output);
