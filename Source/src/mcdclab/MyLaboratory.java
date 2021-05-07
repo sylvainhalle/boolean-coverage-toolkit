@@ -415,10 +415,12 @@ public class MyLaboratory extends Laboratory
 			{
 				add(g);
 			}
-			RatioMacro rm_size = new RatioMacro(this, "sizeRatioMUMCUT", SIZE, FORMULA, "Ratio between test suite size of hypergraph vs MUMCUT");
+			RatioMacro rm_size_chen = new RatioMacro(this, "sizeRatioMUMCUT", SIZE, FORMULA, "Ratio between test suite size of hypergraph vs MUMCUT (Chen)");
+			RatioMacro rm_size_g_cun = new RatioMacro(this, "sizeRatioMUMCUTStvr", SIZE, FORMULA, "Ratio between test suite size of hypergraph vs MUMCUT (G-CUN)");
 			ExhaustivePercentageMacro epm_chen = new ExhaustivePercentageMacro(this, "epMUMCUTChen", "Chen");
 			ExhaustivePercentageMacro epm_hypergraph = new ExhaustivePercentageMacro(this, "epMUMCUTHypergraph", "Hypergraph");
-			add(rm_size, epm_chen, epm_hypergraph);
+			ExhaustivePercentageMacro epm_g_cun = new ExhaustivePercentageMacro(this, "epMUMCUTGCUN", "G-CUN");
+			add(rm_size_chen, rm_size_g_cun, epm_chen, epm_g_cun, epm_hypergraph);
 
 			// A big region encompassing all the lab's parameters
 			Region big_r = new Region();
@@ -462,13 +464,19 @@ public class MyLaboratory extends Laboratory
 					}
 					if (f_r.getString(METHOD).compareTo(HittingSetTestGenerationExperiment.NAME) == 0)
 					{
-						rm_size.addToFirstSet(e);
+						rm_size_chen.addToFirstSet(e);
+						rm_size_g_cun.addToFirstSet(e);
 						epm_hypergraph.add(e);
 					}
 					if (f_r.getString(METHOD).compareTo(Apsec99TestGenerationExperiment.NAME) == 0)
 					{
-						rm_size.addToSecondSet(e);
+						rm_size_chen.addToSecondSet(e);
 						epm_chen.add(e);
+					}
+					if (f_r.getString(METHOD).compareTo(Stvr06TestGenerationExperiment.NAME) == 0)
+					{
+						rm_size_g_cun.addToSecondSet(e);
+						epm_g_cun.add(e);
 					}
 					g.add(e);
 					t_gen_solving.add(e);

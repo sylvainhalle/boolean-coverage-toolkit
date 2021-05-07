@@ -45,7 +45,7 @@ public class ExhaustivePercentageMacro extends MacroScalar
 	 * @param method The name of the test generation method common to all the
 	 * experiments that are added to this macro
 	 */
-	public ExhaustivePercentageMacro(Laboratory lab, String name,	String method)
+	public ExhaustivePercentageMacro(Laboratory lab, String name, String method)
 	{
 		super(lab, name, "Computes the total size ratio compared to an exhaustive test suite, for method " + method);
 		m_experiments = new ArrayList<FormulaBasedExperiment>();
