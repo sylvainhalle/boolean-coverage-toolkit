@@ -15,32 +15,27 @@
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package ca.uqac.lif.mcdc.test;
+package mcdclab.experiment;
 
-import static org.junit.Assert.*;
-
-import java.util.Set;
-
-import org.junit.Test;
-
+import ca.uqac.lif.labpal.ExperimentException;
 import ca.uqac.lif.mcdc.Operator;
-import mcdclab.benchmark.TCASBenchmark;
-
-import static ca.uqac.lif.mcdc.Conjunction.And;
-import static ca.uqac.lif.mcdc.Disjunction.Or;
-import static ca.uqac.lif.mcdc.Negation.Not;
 
 /**
- * Unit tests for operators.
+ * Experiment that replays pre-recorded results from an existing publication. 
  */
-public class OperatorTest
+public class WriteInExperiment extends TestGenerationExperiment
 {
-	@Test
-	public void testVariables1()
+	public WriteInExperiment(Operator op, String operator_name, float size, String method, String criterion)
 	{
-		TCASBenchmark benchmark = new TCASBenchmark();
-		Operator op = benchmark.getFormula(18);
-		Set<String> vars = op.getVariables();
-		assertEquals(13, vars.size());
+		super(op, operator_name, Status.DONE);
+		write(SIZE, size);
+		setInput(METHOD, method);
+		setInput(CRITERION, criterion);
+	}
+
+	@Override
+	public void execute() throws ExperimentException, InterruptedException
+	{
+		// Nothing to do
 	}
 }

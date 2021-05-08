@@ -31,7 +31,7 @@ import ca.uqac.lif.mcdc.KeepValuesOf;
 import ca.uqac.lif.mcdc.Operator;
 import ca.uqac.lif.mcdc.Truncation;
 import ca.uqac.lif.mcdc.TruncationEntropy;
-import mcdclab.TCASBenchmark;
+import mcdclab.benchmark.TCASBenchmark;
 
 import static ca.uqac.lif.mcdc.Conjunction.And;
 import static ca.uqac.lif.mcdc.Disjunction.Or;

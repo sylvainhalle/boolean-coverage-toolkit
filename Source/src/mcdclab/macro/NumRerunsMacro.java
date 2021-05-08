@@ -15,32 +15,31 @@
     You should have received a copy of the GNU Lesser General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package ca.uqac.lif.mcdc.test;
+package mcdclab.macro;
 
-import static org.junit.Assert.*;
-
-import java.util.Set;
-
-import org.junit.Test;
-
-import ca.uqac.lif.mcdc.Operator;
-import mcdclab.benchmark.TCASBenchmark;
-
-import static ca.uqac.lif.mcdc.Conjunction.And;
-import static ca.uqac.lif.mcdc.Disjunction.Or;
-import static ca.uqac.lif.mcdc.Negation.Not;
+import ca.uqac.lif.json.JsonNumber;
+import ca.uqac.lif.labpal.Laboratory;
+import ca.uqac.lif.labpal.macro.MacroScalar;
+import mcdclab.experiment.RandomTestGenerationExperiment;
 
 /**
- * Unit tests for operators.
+ * Macro that tracks the number of times the random generation algorithm
+ * is re-run.
  */
-public class OperatorTest
+public class NumRerunsMacro extends MacroScalar
 {
-	@Test
-	public void testVariables1()
+	/**
+	 * Creates a new instance of the macro.
+	 * @param lab The lab from which to fetch the values
+	 */
+	public NumRerunsMacro(Laboratory lab) 
 	{
-		TCASBenchmark benchmark = new TCASBenchmark();
-		Operator op = benchmark.getFormula(18);
-		Set<String> vars = op.getVariables();
-		assertEquals(13, vars.size());
+		super(lab, "numreruns", "The number of times the random generation algorithm is re-run");
+	}
+
+	@Override
+	public JsonNumber getValue()
+	{
+		return new JsonNumber(RandomTestGenerationExperiment.NUM_RERUNS);
 	}
 }

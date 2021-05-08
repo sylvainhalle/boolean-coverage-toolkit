@@ -30,7 +30,7 @@ import ca.uqac.lif.mcdc.KeepAll;
 import ca.uqac.lif.mcdc.KeepClauses;
 import ca.uqac.lif.mcdc.KeepIfDetermines;
 import ca.uqac.lif.mcdc.KeepVariable;
-import mcdclab.TCASBenchmark;
+import mcdclab.benchmark.TCASBenchmark;
 
 import static ca.uqac.lif.mcdc.Conjunction.And;
 import static ca.uqac.lif.mcdc.Disjunction.Or;
