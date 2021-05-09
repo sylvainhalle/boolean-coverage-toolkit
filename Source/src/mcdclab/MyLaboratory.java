@@ -32,6 +32,7 @@ import ca.uqac.lif.mtnp.plot.TwoDimensionalPlot.Axis;
 import ca.uqac.lif.mtnp.plot.gnuplot.ClusteredHistogram;
 import ca.uqac.lif.mtnp.plot.gnuplot.Scatterplot;
 import ca.uqac.lif.mtnp.table.ExpandAsColumns;
+import ca.uqac.lif.mtnp.table.TableEntry;
 import ca.uqac.lif.mtnp.table.TransformedTable;
 import ca.uqac.lif.mtnp.util.FileHelper;
 import ca.uqac.lif.synthia.random.RandomBoolean;
@@ -47,6 +48,7 @@ import mcdclab.experiment.CriterionFusionExperimentFactory;
 import mcdclab.experiment.HittingSetTestGenerationExperiment;
 import mcdclab.experiment.MCDCTestGenerationExperiment;
 import mcdclab.experiment.RandomTestGenerationExperiment;
+import mcdclab.experiment.Safecomp18TestGenerationExperiment;
 import mcdclab.experiment.Stvr06TestGenerationExperiment;
 import mcdclab.experiment.TestGenerationExperiment;
 import mcdclab.experiment.TestSuiteGenerationFactory;
@@ -56,11 +58,14 @@ import mcdclab.macro.HypergraphStats;
 import mcdclab.macro.MinMaxCoverage;
 import mcdclab.macro.NumRerunsMacro;
 import mcdclab.macro.RatioMacro;
+import mcdclab.plot.SpacedHistogram;
 import mcdclab.server.AllFormulasCallback;
 import mcdclab.server.HologramViewCallback;
 import mcdclab.server.LabStats;
 import mcdclab.table.CoverageTable;
 import mcdclab.table.CriteriaRatioTable;
+import mcdclab.table.FilterLines;
+import mcdclab.table.FilterLines.FilterCondition;
 import mcdclab.table.HittingSetExperimentTable;
 import mcdclab.table.HypergraphMultiBinDistribution;
 
@@ -286,12 +291,13 @@ public class MyLaboratory extends Laboratory
 				add(g);
 			}
 			RatioMacro rm_size = new RatioMacro(this, "sizeRatioMCDC", SIZE, FORMULA, "Ratio between test suite size of hypergraph vs MCDC");
+			RatioMacro rm_size_sat = new RatioMacro(this, "sizeRatioMCDCSAT", SIZE, FORMULA, "Ratio between test suite size of hypergraph vs SAT-based approach");
 			RatioMacro rm_time = new RatioMacro(this, "timeRatioMCDC", TIME, FORMULA, "Ratio between test suite time of hypergraph vs MCDC");
-			add(rm_size, rm_time);
+			add(rm_size, rm_size_sat, rm_time);
 
 			// A big region encompassing all the lab's parameters
 			Region big_r = new Region();
-			big_r.add(METHOD, HittingSetTestGenerationExperiment.NAME, MCDCTestGenerationExperiment.NAME);
+			big_r.add(METHOD, HittingSetTestGenerationExperiment.NAME, /*MCDCTestGenerationExperiment.NAME,*/ Safecomp18TestGenerationExperiment.NAME);
 			big_r.add(CRITERION, TestSuiteGenerationFactory.C_MCDC);
 			OperatorProvider op_provider = new OperatorProvider();
 			addFormulas(op_provider, m_isSmall);
@@ -299,6 +305,11 @@ public class MyLaboratory extends Laboratory
 
 			// The factory to generate experiments
 			TestSuiteGenerationFactory factory = new TestSuiteGenerationFactory(this, op_provider, only_hypergraph, m_timeout);
+			{
+				// SAFECOMP'18 results for MC/DC
+				Scanner scanner = new Scanner(FileHelper.internalFileToStream(MyLaboratory.class, "/mcdclab/results/safecomp2018.csv"));
+				Safecomp18TestGenerationExperiment.addToLab(this, scanner, op_provider);
+			}
 
 			for (Region c_r : big_r.all(CRITERION))
 			{
@@ -313,6 +324,18 @@ public class MyLaboratory extends Laboratory
 				TransformedTable tt_size = new TransformedTable(new ExpandAsColumns(METHOD, SIZE), et_size);
 				tt_size.setTitle("Test suite size " + criterion);
 				tt_size.setNickname(LatexNamer.latexify("tGenSize" + criterion));
+				TransformedTable tt_size_tcas = new TransformedTable(new FilterLines(new OnlyTcas()), tt_size);
+				tt_size_tcas.setShowInList(false);
+				ClusteredHistogram histo = new ClusteredHistogram(tt_size_tcas);
+				histo.setTitle(tt_size.getTitle());
+				histo.setNickname(LatexNamer.latexify("pHistoSizeTCAS" + criterion));
+				histo.setCaption(Axis.X, "Formula").setCaption(Axis.Y, "Test suite size");
+				add(histo);
+				SpacedHistogram s_histo = new SpacedHistogram(5, tt_size);
+				s_histo.setTitle(tt_size.getTitle());
+				s_histo.setNickname(LatexNamer.latexify("pHistoSize" + criterion));
+				s_histo.setCaption(Axis.X, "Formula").setCaption(Axis.Y, "Test suite size");
+				add(s_histo);
 				ExperimentTable et_size_vs_time = new ExperimentTable(SIZE, METHOD, TIME);
 				et_size_vs_time.setShowInList(false);
 				TransformedTable tt_size_vs_time = new TransformedTable(new ExpandAsColumns(METHOD, TIME), et_size_vs_time);
@@ -333,12 +356,17 @@ public class MyLaboratory extends Laboratory
 					if (f_r.getString(METHOD).compareTo(HittingSetTestGenerationExperiment.NAME) == 0)
 					{
 						rm_size.addToFirstSet(e);
+						rm_size_sat.addToFirstSet(e);
 						rm_time.addToFirstSet(e);
 					}
 					if (f_r.getString(METHOD).compareTo(MCDCTestGenerationExperiment.NAME) == 0)
 					{
 						rm_size.addToSecondSet(e);
 						rm_time.addToSecondSet(e);
+					}
+					if (f_r.getString(METHOD).compareTo(Safecomp18TestGenerationExperiment.NAME) == 0)
+					{
+						rm_size_sat.addToSecondSet(e);
 					}
 					g.add(e);
 					t_gen_solving.add(e);
@@ -349,7 +377,7 @@ public class MyLaboratory extends Laboratory
 					et_size_vs_time.add(e);
 					et_f_size_vs_time.add(e);
 				}
-				add(tt_time, tt_size, tt_size_vs_time, tt_f_size_vs_time);
+				add(tt_time, tt_size, tt_size_vs_time, tt_f_size_vs_time, tt_size_tcas);
 				Scatterplot p_size_vs_time = new Scatterplot(tt_size_vs_time);
 				p_size_vs_time.withLines(false);
 				add(p_size_vs_time);				
@@ -404,6 +432,11 @@ public class MyLaboratory extends Laboratory
 				TransformedTable tt_size_vs_time = new TransformedTable(new ExpandAsColumns(METHOD, TIME), et_size_vs_time);
 				tt_size_vs_time.setTitle("Generation time vs. test suite size " + criterion);
 				tt_size_vs_time.setNickname(LatexNamer.latexify("ttSizeVsTimeACTS" + criterion));
+				ClusteredHistogram histo = new ClusteredHistogram(tt_size);
+				histo.setTitle(tt_size.getTitle());
+				histo.setNickname(LatexNamer.latexify("pHistoSize" + criterion));
+				histo.setCaption(Axis.X, "Formula").setCaption(Axis.Y, "Test suite size");
+				add(histo);
 				for (Region f_r : c_r.all(FORMULA, METHOD))
 				{
 					int n = op_provider.getFormula(f_r.getString(FORMULA)).getSize();
@@ -485,6 +518,11 @@ public class MyLaboratory extends Laboratory
 				tt_size.setTitle("Test suite size " + criterion);
 				tt_size.setNickname(LatexNamer.latexify("ttSize" + criterion));
 				add(tt_size);
+				ClusteredHistogram histo = new ClusteredHistogram(tt_size);
+				histo.setTitle(tt_size.getTitle());
+				histo.setNickname("pHistoSize" + criterion);
+				histo.setCaption(Axis.X, "Formula").setCaption(Axis.Y, "Test suite size");
+				add(histo);
 				for (Region f_r : big_r.all(METHOD, FORMULA))
 				{
 					if (!f_r.getString(FORMULA).startsWith("TCAS"))
@@ -732,5 +770,17 @@ public class MyLaboratory extends Laboratory
 	{
 		// Nothing else to do here
 		MyLaboratory.initialize(args, MyLaboratory.class);
+	}
+	
+	/**
+	 * Condition used to keep only the lines of the TCAS benchmark.
+	 */
+	protected static class OnlyTcas implements FilterCondition
+	{
+		@Override
+		public boolean include(TableEntry te)
+		{
+			return te.get(FORMULA).toString().contains("TCAS");
+		}
 	}
 }

@@ -1,0 +1,59 @@
+# Results of MC/DC coverage from Kitamura et al., SAFECOMP 2018
+#
+# NOTE: formulas in Table 2 of this paper are not listed in the same
+# order as in other papers using the TCAS benchmark. The formulas in
+# this file have been renumbered so that they match those in other
+# publications.
+#
+# The correspondence is the following:
+# 
+# SAFECOMP      TCAS
+# 1             4
+# 2             1
+# 3             9
+# 4             14
+# 5             20
+# 6             8
+# 7             19
+# 8             2
+# 9             5
+# 10            15
+# 11            18
+# 12            ?
+# 13            6
+# 14            17
+# 15            3
+# 16            13
+# 17            16
+# 18            10
+# 19            11
+# 20            ?
+#
+# Note that formula 20 in the SAFECOMP paper does not correspond to any
+# formula in the APSEC 1999 paper. In addition, formula 12 is formula 11
+# copy-pasted twice, which is probably an error. (The authors have been
+# contacted regarding this but did not answer.)
+#
+#Formula name*	Size
+#---------------------------
+
+TCAS 4			6
+TCAS 1			5
+TCAS 9			6
+TCAS 14			6
+TCAS 20			8
+TCAS 8			3
+TCAS 19			7
+TCAS 2			4
+TCAS 5			9
+TCAS 15			7
+TCAS 18			8
+#TCAS 12			8 --Ignored, see above
+TCAS 6			9
+TCAS 17			9
+TCAS 3			9
+TCAS 13			11
+TCAS 16			11
+TCAS 10			13
+TCAS 11			12
+#TCAS 20			12  --Ignored, see above
