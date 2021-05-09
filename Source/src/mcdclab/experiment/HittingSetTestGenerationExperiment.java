@@ -81,6 +81,14 @@ public class HittingSetTestGenerationExperiment extends TestGenerationExperiment
 	}
 	
 	/**
+	 * Private empty constructor, added only to allow deserialization.
+	 */
+	private HittingSetTestGenerationExperiment()
+	{
+		super(null, null);
+	}
+	
+	/**
 	 * Creates a new experiment.
 	 * @param formula The formula to generate coverage for
 	 * @param formula_name A name given to the formula

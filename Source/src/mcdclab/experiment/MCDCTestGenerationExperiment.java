@@ -66,6 +66,14 @@ public class MCDCTestGenerationExperiment extends TestGenerationExperiment
 	 * the expected location
 	 */
 	protected static boolean s_toolPresent = checkTool();
+	
+	/**
+	 * Empty constructor for deserialization.
+	 */
+	protected MCDCTestGenerationExperiment() 
+	{
+		this(null, null);
+	}
 
 	public MCDCTestGenerationExperiment(Operator formula, String formula_name)
 	{

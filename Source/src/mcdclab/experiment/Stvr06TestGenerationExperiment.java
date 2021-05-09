@@ -33,6 +33,14 @@ public class Stvr06TestGenerationExperiment extends WriteInExperiment
 	 */
 	public static final transient String NAME = "G-CUN";
 	
+	/**
+	 * Protected empty constructor, added only to allow deserialization.
+	 */
+	protected Stvr06TestGenerationExperiment()
+	{
+		this(null, null, 0);
+	}
+	
 	public Stvr06TestGenerationExperiment(Operator op, String operator_name, float size)
 	{
 		super(op, operator_name, size, NAME, TestSuiteGenerationFactory.C_MUMCUT);

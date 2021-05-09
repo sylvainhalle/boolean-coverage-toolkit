@@ -44,6 +44,14 @@ public class ActsTestGenerationExperiment extends TestGenerationExperiment
 	 */
 	protected int m_t;
 	
+	/**
+	 * Empty constructor for deserialization.
+	 */
+	protected ActsTestGenerationExperiment() 
+	{
+		this(null, null, 0);
+	}
+	
 	public ActsTestGenerationExperiment(Operator formula, String formula_name, int t) 
 	{
 		super(formula, formula_name);

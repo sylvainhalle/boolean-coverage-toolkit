@@ -33,6 +33,14 @@ public class Apsec99TestGenerationExperiment extends WriteInExperiment
 	 */
 	public static final transient String NAME = "Chen";
 	
+	/**
+	 * Protected empty constructor, added only to allow deserialization.
+	 */
+	protected Apsec99TestGenerationExperiment()
+	{
+		this(null, null, 0);
+	}
+	
 	public Apsec99TestGenerationExperiment(Operator op, String operator_name, float size)
 	{
 		super(op, operator_name, size, NAME, TestSuiteGenerationFactory.C_MUMCUT);

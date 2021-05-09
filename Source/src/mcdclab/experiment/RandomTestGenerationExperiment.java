@@ -49,6 +49,14 @@ public class RandomTestGenerationExperiment extends DependentTestGenerationExper
 	protected int m_seed;
 	
 	/**
+	 * Empty constructor for deserialization.
+	 */
+	protected RandomTestGenerationExperiment() 
+	{
+		this(null, 0);
+	}
+	
+	/**
 	 * Creates a new experiment instance.
 	 * @param reference @param reference The hitting set experiment that is used
 	 * as a reference
