@@ -91,6 +91,10 @@ public class RatioMacro extends MacroScalar
 		{
 			Experiment e1 = entry.getValue();
 			Experiment e2 = m_secondSet.get(entry.getKey());
+			if (e1 == null || e2 == null)
+			{
+				continue;
+			}
 			float v1 = e1.readInt(m_parameter);
 			float v2 = e2.readInt(m_parameter);
 			if (v2 != 0)
