@@ -297,7 +297,7 @@ public class MyLaboratory extends Laboratory
 
 			// A big region encompassing all the lab's parameters
 			Region big_r = new Region();
-			big_r.add(METHOD, HittingSetTestGenerationExperiment.NAME, /*MCDCTestGenerationExperiment.NAME,*/ Safecomp18TestGenerationExperiment.NAME);
+			big_r.add(METHOD, HittingSetTestGenerationExperiment.NAME, MCDCTestGenerationExperiment.NAME, Safecomp18TestGenerationExperiment.NAME);
 			big_r.add(CRITERION, TestSuiteGenerationFactory.C_MCDC);
 			OperatorProvider op_provider = new OperatorProvider();
 			addFormulas(op_provider, m_isSmall);
