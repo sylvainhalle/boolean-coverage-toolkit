@@ -574,7 +574,10 @@ public class MyLaboratory extends Laboratory
 			big_r.add(CRITERIA, 
 					CriterionFusionExperimentFactory.C_MCDC_PREDICATE, 
 					CriterionFusionExperimentFactory.C_MCDC_2WAY,
-					CriterionFusionExperimentFactory.C_CLAUSE_2WAY);
+					CriterionFusionExperimentFactory.C_MCDC_3WAY,
+					CriterionFusionExperimentFactory.C_MCDC_CLAUSE,
+					CriterionFusionExperimentFactory.C_CLAUSE_2WAY,
+					CriterionFusionExperimentFactory.C_CLAUSE_3WAY);
 			OperatorProvider op_provider = new OperatorProvider();
 			addFormulas(op_provider, m_isSmall);
 			big_r.add(FORMULA, op_provider.getNames());

@@ -43,14 +43,29 @@ public class CriterionFusionExperimentFactory extends FormulaBasedExperimentFact
 	public static final String C_CLAUSE_2WAY = TestSuiteGenerationFactory.C_CLAUSE + "," + TestSuiteGenerationFactory.C_2WAY;
 	
 	/**
+	 * String representing the combined criterion "clause + 3-way coverage".
+	 */
+	public static final String C_CLAUSE_3WAY = TestSuiteGenerationFactory.C_CLAUSE + "," + TestSuiteGenerationFactory.C_3WAY;
+	
+	/**
 	 * String representing the combined criterion "MC/DC + predicate coverage".
 	 */
 	public static final String C_MCDC_PREDICATE = TestSuiteGenerationFactory.C_MCDC + "," + TestSuiteGenerationFactory.C_PREDICATE;
 	
 	/**
+	 * String representing the combined criterion "MC/DC + clause coverage".
+	 */
+	public static final String C_MCDC_CLAUSE = TestSuiteGenerationFactory.C_MCDC + "," + TestSuiteGenerationFactory.C_CLAUSE;
+	
+	/**
 	 * String representing the combined criterion "MC/DC + 2-way".
 	 */
 	public static final String C_MCDC_2WAY = TestSuiteGenerationFactory.C_MCDC + "," + TestSuiteGenerationFactory.C_2WAY;
+	
+	/**
+	 * String representing the combined criterion "MC/DC + 3-way".
+	 */
+	public static final String C_MCDC_3WAY = TestSuiteGenerationFactory.C_MCDC + "," + TestSuiteGenerationFactory.C_3WAY;
 	
 	/**
 	 * Creates a new experiment factory.
