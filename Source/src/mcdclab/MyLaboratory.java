@@ -129,7 +129,7 @@ public class MyLaboratory extends Laboratory
 		boolean include_mumcut = false;
 
 		/* Set to true to include experiments for criteria merging. */
-		boolean include_merging = false;
+		boolean include_merging = true;
 
 		/* Set to true to include only hypergraph experiments. */
 		boolean only_hypergraph = false;
@@ -140,7 +140,7 @@ public class MyLaboratory extends Laboratory
 		   themselves are not added to the lab. This makes it possible to
 		   export artifacts normally (i.e. without creating LaTeX compilation
 		   errors) when running the lab on a subset of all experiments. */
-		boolean placeholders = true;
+		boolean placeholders = false;
 
 		// Read command line arguments
 		{
@@ -599,6 +599,9 @@ public class MyLaboratory extends Laboratory
 				et_time.setTitle("Time comparison between global and merged " + criteria);
 				et_time.setNickname(LatexNamer.latexify("ttMergedVsGlobalTime" + criteria));
 				add(et_size, et_time);
+				GlobalVsMergedRatioMacro rm_size = new GlobalVsMergedRatioMacro(this, LatexNamer.latexify("sizeRatioMerged" + criteria), SIZE_GLOBAL, SIZE_MERGED, "Ratio between test suite size of merged vs global for " + criteria);
+				GlobalVsMergedRatioMacro rm_time = new GlobalVsMergedRatioMacro(this, LatexNamer.latexify("timeRatioMerged" + criteria), TIME_GLOBAL, TIME_MERGED, "Ratio between generation time of merged vs global for " + criteria);
+				add(rm_size, rm_time);
 				for (Region f_r : c_r.all(FORMULA))
 				{
 					CriterionFusionExperiment cfe = factory.get(f_r, include_merging);
@@ -610,6 +613,8 @@ public class MyLaboratory extends Laboratory
 					et_time.add(cfe);
 					crt_size.add(cfe);
 					crt_time.add(cfe);
+					rm_size.add(cfe);
+					rm_time.add(cfe);
 					g.add(cfe);
 				}
 				Scatterplot p_size = new Scatterplot(et_size);
