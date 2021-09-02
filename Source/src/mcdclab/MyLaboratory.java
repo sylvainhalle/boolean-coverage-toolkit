@@ -68,6 +68,7 @@ import mcdclab.table.FilterLines;
 import mcdclab.table.FilterLines.FilterCondition;
 import mcdclab.table.HittingSetExperimentTable;
 import mcdclab.table.HypergraphMultiBinDistribution;
+import mcdclab.table.MultiComparisonTable;
 
 import static mcdclab.experiment.CriterionFusionExperiment.CRITERIA;
 import static mcdclab.experiment.CriterionFusionExperiment.SIZE_GLOBAL;
@@ -100,9 +101,9 @@ public class MyLaboratory extends Laboratory
 	/** 
 	 * By setting this parameter to true, only "small" problem instances
 	 * will be added to the lab (fewer variables, etc.). This is used to
-	 * debug and test the lab and should be put to false for the final run. 
+	 * debug and test the lab and should be set to false for the final run. 
 	 */
-	protected boolean m_isSmall = false;
+	protected boolean m_isSmall = true;
 	
 	/**
 	 * The timeout used to cancel experiments, in milliseconds
@@ -346,6 +347,9 @@ public class MyLaboratory extends Laboratory
 				TransformedTable tt_f_size_vs_time = new TransformedTable(new ExpandAsColumns(METHOD, TIME), et_f_size_vs_time);
 				tt_f_size_vs_time.setTitle("Generation time vs. formula size " + criterion);
 				tt_f_size_vs_time.setNickname(LatexNamer.latexify("ttFormulaSizeVsSize" + criterion));
+				MultiComparisonTable mt_size = new MultiComparisonTable(FORMULA, METHOD, HittingSetTestGenerationExperiment.NAME, SIZE);
+				mt_size.setTitle("Test suite size of hypergraph vs. other methods for " + criterion);
+				mt_size.setNickname(LatexNamer.latexify("mtSizeComparison" + criterion));
 				for (Region f_r : c_r.all(FORMULA, METHOD))
 				{
 					TestGenerationExperiment e = factory.get(f_r, include_mcdc);
@@ -353,6 +357,7 @@ public class MyLaboratory extends Laboratory
 					{
 						continue;
 					}
+					mt_size.add(e);
 					if (f_r.getString(METHOD).compareTo(HittingSetTestGenerationExperiment.NAME) == 0)
 					{
 						rm_size.addToFirstSet(e);
@@ -377,13 +382,18 @@ public class MyLaboratory extends Laboratory
 					et_size_vs_time.add(e);
 					et_f_size_vs_time.add(e);
 				}
-				add(tt_time, tt_size, tt_size_vs_time, tt_f_size_vs_time, tt_size_tcas);
+				add(tt_time, tt_size, tt_size_vs_time, tt_f_size_vs_time, tt_size_tcas, mt_size);
 				Scatterplot p_size_vs_time = new Scatterplot(tt_size_vs_time);
 				p_size_vs_time.withLines(false);
 				add(p_size_vs_time);				
 				Scatterplot p_f_size_vs_time = new Scatterplot(tt_f_size_vs_time);
 				p_f_size_vs_time.withLines(false);
 				add(p_f_size_vs_time);
+				Scatterplot p_mt_size = new Scatterplot(mt_size);
+				p_mt_size.setTitle(mt_size.getTitle());
+				p_mt_size.setNickname(LatexNamer.latexify("pmtSizeComparison" + criterion));
+				p_mt_size.withLines(false);
+				add(p_mt_size);
 			}
 		}
 
@@ -437,6 +447,9 @@ public class MyLaboratory extends Laboratory
 				histo.setNickname(LatexNamer.latexify("pHistoSize" + criterion));
 				histo.setCaption(Axis.X, "Formula").setCaption(Axis.Y, "Test suite size");
 				add(histo);
+				MultiComparisonTable mt_size = new MultiComparisonTable(FORMULA, METHOD, HittingSetTestGenerationExperiment.NAME, SIZE);
+				mt_size.setTitle("Test suite size of hypergraph vs. other methods for " + criterion);
+				mt_size.setNickname(LatexNamer.latexify("mtSizeComparison" + criterion));
 				for (Region f_r : c_r.all(FORMULA, METHOD))
 				{
 					int n = op_provider.getFormula(f_r.getString(FORMULA)).getSize();
@@ -449,6 +462,7 @@ public class MyLaboratory extends Laboratory
 					{
 						continue;
 					}
+					mt_size.add(e);
 					if (f_r.getString(METHOD).compareTo(HittingSetTestGenerationExperiment.NAME) == 0)
 					{
 						rm_size.addToFirstSet(e);
@@ -467,11 +481,16 @@ public class MyLaboratory extends Laboratory
 					et_size.add(e);
 					et_size_vs_time.add(e);
 				}
-				add(tt_time, tt_size, tt_size_vs_time);
+				add(tt_time, tt_size, tt_size_vs_time, mt_size);
 				Scatterplot p_size_vs_time = new Scatterplot(tt_size_vs_time);
 				p_size_vs_time.withLines(false);
 				p_size_vs_time.setNickname(LatexNamer.latexify("pSizeVsTimeACTS" + criterion));
 				add(p_size_vs_time);
+				Scatterplot p_mt_size = new Scatterplot(mt_size);
+				p_mt_size.setTitle(mt_size.getTitle());
+				p_mt_size.setNickname(LatexNamer.latexify("pmtSizeComparison" + criterion));
+				p_mt_size.withLines(false);
+				add(p_mt_size);
 			}
 		}
 
@@ -523,6 +542,10 @@ public class MyLaboratory extends Laboratory
 				histo.setNickname("pHistoSize" + criterion);
 				histo.setCaption(Axis.X, "Formula").setCaption(Axis.Y, "Test suite size");
 				add(histo);
+				MultiComparisonTable mt_size = new MultiComparisonTable(FORMULA, METHOD, HittingSetTestGenerationExperiment.NAME, SIZE);
+				mt_size.setTitle("Test suite size of hypergraph vs. other methods for " + criterion);
+				mt_size.setNickname(LatexNamer.latexify("mtSizeComparison" + criterion));
+				add(mt_size);
 				for (Region f_r : big_r.all(METHOD, FORMULA))
 				{
 					if (!f_r.getString(FORMULA).startsWith("TCAS"))
@@ -535,6 +558,7 @@ public class MyLaboratory extends Laboratory
 					{
 						continue;
 					}
+					mt_size.add(e);
 					if (f_r.getString(METHOD).compareTo(HittingSetTestGenerationExperiment.NAME) == 0)
 					{
 						rm_size_chen.addToFirstSet(e);
@@ -558,6 +582,11 @@ public class MyLaboratory extends Laboratory
 					et_size.add(e);
 					//et_coverage_random.add(e);
 				}
+				Scatterplot p_mt_size = new Scatterplot(mt_size);
+				p_mt_size.setTitle(mt_size.getTitle());
+				p_mt_size.setNickname(LatexNamer.latexify("pmtSizeComparison" + criterion));
+				p_mt_size.withLines(false);
+				add(p_mt_size);
 			}
 		}
 
@@ -634,6 +663,15 @@ public class MyLaboratory extends Laboratory
 		}
 	}
 
+	/**
+	 * Adds a set of randomly-generated Boolean formulas to the list of
+	 * formulas to be considered in the benchmark.
+	 * @param provider A provider of randomly-generated formulas
+	 * @param small A Boolean flag to generate a "small" benchmark, i.e. with
+	 * fewer formulas, each containing fewer variables and clauses than the
+	 * "regular" benchmark. Used only for debugging, and not for producing the
+	 * final results.
+	 */
 	protected void addFormulas(OperatorProvider provider, boolean small)
 	{
 		int num_formulas = 20, random_seed = getRandomSeed();
