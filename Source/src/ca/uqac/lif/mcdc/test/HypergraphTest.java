@@ -34,6 +34,7 @@ import static ca.uqac.lif.mcdc.Negation.Not;
 /**
  * Unit tests for hypergraph generation.
  */
+@SuppressWarnings("unused")
 public class HypergraphTest
 {
 	@Test

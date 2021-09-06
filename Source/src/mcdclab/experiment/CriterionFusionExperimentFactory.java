@@ -68,6 +68,11 @@ public class CriterionFusionExperimentFactory extends FormulaBasedExperimentFact
 	public static final String C_MCDC_3WAY = TestSuiteGenerationFactory.C_MCDC + "," + TestSuiteGenerationFactory.C_3WAY;
 	
 	/**
+	 * String representing the combined criterion "MC/DC + MUMCUT".
+	 */
+	public static final String C_MCDC_MUMCUT = TestSuiteGenerationFactory.C_MCDC + "," + TestSuiteGenerationFactory.C_MUMCUT;
+	
+	/**
 	 * Creates a new experiment factory.
 	 * @param lab The lab to which the experiments will be added
 	 * @param provider A provider for formulas 

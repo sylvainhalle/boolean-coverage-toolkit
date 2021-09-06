@@ -222,4 +222,10 @@ public class ComparisonTable extends Table
 	{
 		return e.getStatus() != Experiment.Status.DONE;
 	}
+	
+	@Override
+	public ComparisonTable duplicate(boolean with_state)
+	{
+		throw new UnsupportedOperationException("Cannot duplicate this table");
+	}
 }

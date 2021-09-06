@@ -33,6 +33,7 @@ import static ca.uqac.lif.mcdc.Negation.Not;
 /**
  * Unit tests for operators.
  */
+@SuppressWarnings("unused")
 public class OperatorTest
 {
 	@Test

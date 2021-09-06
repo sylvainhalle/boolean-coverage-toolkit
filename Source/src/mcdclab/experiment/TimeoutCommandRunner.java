@@ -199,7 +199,8 @@ public class TimeoutCommandRunner extends Thread
 			m_errorCode = process_t.waitForProcess(m_timeout);
 			if (m_errorCode == Integer.MIN_VALUE)
 			{
-				process.destroyForcibly();
+				//process.destroyForcibly(); --Only works on Java 1.8+
+				process.destroy();
 				return;
 			}
 			do

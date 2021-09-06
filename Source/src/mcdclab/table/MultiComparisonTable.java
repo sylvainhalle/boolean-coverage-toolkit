@@ -117,4 +117,10 @@ public class MultiComparisonTable extends Table
 	{
 		return getDataTable().getDependency(row, col);
 	}
+	
+	@Override
+	public MultiComparisonTable duplicate(boolean with_state)
+	{
+		throw new UnsupportedOperationException("Cannot duplicate this table");
+	}
 }

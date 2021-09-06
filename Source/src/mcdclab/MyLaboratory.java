@@ -103,7 +103,7 @@ public class MyLaboratory extends Laboratory
 	 * will be added to the lab (fewer variables, etc.). This is used to
 	 * debug and test the lab and should be set to false for the final run. 
 	 */
-	protected boolean m_isSmall = true;
+	protected boolean m_isSmall = false;
 	
 	/**
 	 * The timeout used to cancel experiments, in milliseconds
@@ -114,7 +114,7 @@ public class MyLaboratory extends Laboratory
 	public void setup()
 	{
 		// Metadata
-		setAuthor("Sylvain Hallé");
+		setAuthor("ANONYMOUS"); // Put name back on public disclosure
 		setTitle("Boolean condition coverage with evaluation trees");
 
 		/* Set to true to include experiments with random test suites. */
@@ -184,7 +184,7 @@ public class MyLaboratory extends Laboratory
 			{
 				include_mcdc = true;
 				include_mumcut = true;
-				include_merging = false;
+				include_merging = true;
 				include_combinatorial = true;
 				include_random = true;
 			}
@@ -601,12 +601,14 @@ public class MyLaboratory extends Laboratory
 			// A big region encompassing all the lab's parameters
 			Region big_r = new Region();
 			big_r.add(CRITERIA, 
-					CriterionFusionExperimentFactory.C_MCDC_PREDICATE, 
+					CriterionFusionExperimentFactory.C_MCDC_PREDICATE,
+					CriterionFusionExperimentFactory.C_MCDC_MUMCUT,
 					CriterionFusionExperimentFactory.C_MCDC_2WAY,
 					CriterionFusionExperimentFactory.C_MCDC_3WAY,
 					CriterionFusionExperimentFactory.C_MCDC_CLAUSE,
 					CriterionFusionExperimentFactory.C_CLAUSE_2WAY,
-					CriterionFusionExperimentFactory.C_CLAUSE_3WAY);
+					CriterionFusionExperimentFactory.C_CLAUSE_3WAY
+					);
 			OperatorProvider op_provider = new OperatorProvider();
 			addFormulas(op_provider, m_isSmall);
 			big_r.add(FORMULA, op_provider.getNames());

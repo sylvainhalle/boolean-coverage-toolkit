@@ -39,6 +39,7 @@ import static ca.uqac.lif.mcdc.Negation.Not;
 /**
  * Unit tests for hitting set.
  */
+@SuppressWarnings("unused")
 public class HittingSetTest 
 {
 	@Test

@@ -125,7 +125,7 @@ public class CriterionFusionExperiment extends FormulaBasedExperiment
 			PersistentHashSet hs = HittingSetRunner.runHittingSet(g);
 			for (Object o : hs)
 			{
-				suite.add((long) o);
+				suite.add((Long) o);
 			}
 		}
 		end = System.currentTimeMillis();

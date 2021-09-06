@@ -30,6 +30,7 @@ import static ca.uqac.lif.mcdc.Conjunction.And;
 import static ca.uqac.lif.mcdc.Disjunction.Or;
 import static ca.uqac.lif.mcdc.Negation.Not;
 
+@SuppressWarnings("unused")
 public class HologramRendererTest 
 {
 	protected static final Atom a = new Atom("a");

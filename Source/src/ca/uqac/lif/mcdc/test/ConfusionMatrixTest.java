@@ -38,6 +38,7 @@ import static ca.uqac.lif.mcdc.Disjunction.Or;
 import static ca.uqac.lif.mcdc.Negation.Not;
 import static org.junit.Assert.*;
 
+@SuppressWarnings("unused")
 public class ConfusionMatrixTest 
 {
 	protected static final Atom a = new Atom("a");

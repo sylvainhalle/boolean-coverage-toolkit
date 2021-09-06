@@ -37,6 +37,7 @@ import static ca.uqac.lif.mcdc.Negation.Not;
 /**
  * Unit tests for operators.
  */
+@SuppressWarnings("unused")
 public class TruncationTest
 {
 	protected static final Atom a = new Atom("a");

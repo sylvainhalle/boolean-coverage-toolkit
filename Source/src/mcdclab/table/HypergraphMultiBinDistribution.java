@@ -172,4 +172,10 @@ public class HypergraphMultiBinDistribution extends Table
 		// TODO Auto-generated method stub
 		return null;
 	}	
+	
+	@Override
+	public HypergraphMultiBinDistribution duplicate(boolean with_state)
+	{
+		throw new UnsupportedOperationException("Cannot duplicate this table");
+	}
 }

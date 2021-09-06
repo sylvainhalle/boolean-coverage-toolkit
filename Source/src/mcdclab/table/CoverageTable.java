@@ -121,4 +121,10 @@ public class CoverageTable extends Table
 		// Not supported
 		return null;
 	}
+	
+	@Override
+	public CoverageTable duplicate(boolean with_state)
+	{
+		throw new UnsupportedOperationException("Cannot duplicate this table");
+	}
 }

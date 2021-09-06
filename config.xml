@@ -30,10 +30,10 @@
   
   <!-- The project's author. Currently this only
   shows up in the footer of the Javadoc documentation. -->
-  <author>Sylvain Hallé</author>
+  <author>ANONYMOUS</author>
   
   <!-- The project's main class -->
-  <mainclass>MyLaboratory</mainclass>
+  <mainclass>mcdclab.MyLaboratory</mainclass>
   
   <!-- Output jar -->
   <jar>

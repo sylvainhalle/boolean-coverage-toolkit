@@ -135,4 +135,10 @@ public class ValuationIterator implements Iterator<Valuation>
     m_update = true;
     return v;
   }
+  
+  @Override
+  public void remove()
+  {
+  	  throw new UnsupportedOperationException("");
+  }
 }

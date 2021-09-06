@@ -175,4 +175,10 @@ public class CriteriaRatioTable extends Table
 		}
 		return m_dependencies.get(line);
 	}
+	
+	@Override
+	public CriteriaRatioTable duplicate(boolean with_state)
+	{
+		throw new UnsupportedOperationException("Cannot duplicate this table");
+	}
 }
