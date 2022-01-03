@@ -279,10 +279,16 @@ public class TimeoutCommandRunner extends Thread
 	    public int waitForProcess(long p_timeoutMilliseconds)
 	    {
 	        this.start();
-
 	        try
 	        {
+	        	if (p_timeoutMilliseconds < 0)
+	        	{
+	        		this.join();
+	        	}
+	        	else
+	        	{
 	            this.join(p_timeoutMilliseconds);
+	        	}
 	        }
 	        catch (InterruptedException e)
 	        {
