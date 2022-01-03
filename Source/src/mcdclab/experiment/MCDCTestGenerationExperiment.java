@@ -32,7 +32,7 @@ import ca.uqac.lif.mcdc.Disjunction;
 import ca.uqac.lif.mcdc.Negation;
 import ca.uqac.lif.mcdc.Operator;
 import ca.uqac.lif.mcdc.Valuation;
-import ca.uqac.lif.mtnp.util.FileHelper;
+import ca.uqac.lif.mtnp.util.CommandRunner;
 
 /**
  * Generates test suites for MC/DC coverage by calling the external tool
@@ -48,7 +48,7 @@ public class MCDCTestGenerationExperiment extends TestGenerationExperiment
 	/**
 	 * The name of the external command to be called.
 	 */
-	protected static final transient String s_appName = "/usr/local/bin/mcdc";
+	protected static final transient String s_appName = "mcdc";
 
 	/**
 	 * The regex pattern to parse the contents of the test suite.
@@ -205,7 +205,8 @@ public class MCDCTestGenerationExperiment extends TestGenerationExperiment
 	 */
 	protected static boolean checkTool()
 	{
-		return FileHelper.fileExists(s_appName);
+		byte[] b = CommandRunner.runAndGet(s_appName, "");
+		return b != null;
 	}
 
 	/**
