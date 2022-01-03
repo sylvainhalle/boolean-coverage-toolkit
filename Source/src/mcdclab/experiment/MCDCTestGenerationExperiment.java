@@ -48,7 +48,7 @@ public class MCDCTestGenerationExperiment extends TestGenerationExperiment
 	/**
 	 * The name of the external command to be called.
 	 */
-	protected static final transient String s_appName = "mcdc";
+	protected static final transient String s_appName = "/usr/local/bin/mcdc";
 
 	/**
 	 * The regex pattern to parse the contents of the test suite.

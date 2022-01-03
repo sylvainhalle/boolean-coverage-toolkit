@@ -66,6 +66,11 @@ public class CriterionFusionExperiment extends FormulaBasedExperiment
 	 */
 	protected transient Set<Set<Truncation>> m_truncationSets;
 	
+	public CriterionFusionExperiment()
+	{
+		super(null, null);
+	}
+	
 	/**
 	 * Creates a new experiment.
 	 * @param formula The formula to generate coverage for
