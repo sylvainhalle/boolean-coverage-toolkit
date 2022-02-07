@@ -108,7 +108,7 @@ public class MyLaboratory extends Laboratory
 	/**
 	 * The timeout used to cancel experiments, in milliseconds
 	 */
-	protected long m_timeout = -1;
+	protected long m_timeout = 300000;
 
 	@Override
 	public void setup()
